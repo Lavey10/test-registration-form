@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test User Registration</title>
+    <style>
+        body { font-family: Arial; max-width: 400px; margin: 50px auto; padding: 20px; }
+        h2 { color: #333; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+        button { background: #007cba; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+        button:hover { background: #005a85; }
+    </style>
+</head>
+<body>
+    <h2>🎯 Test User Registration</h2>
+    
+    <form id="registrationForm">
+        <label>Email:</label>
+        <input type="email" id="email" value="test@example.com" required>
+        
+        <label>Name:</label>
+        <input type="text" id="name" value="John Doe" required>
+        
+        <button type="submit">🚀 Register User</button>
+    </form>
+
+    <script>
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const name = document.getElementById('name').value;
+            
+            const data = {
+                email: email,
+                name: name
+            };
+            
+            try {
+                const response = await fetch('http://localhost:5678/webhook/user-registration', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                alert('Success: ' + JSON.stringify(result));
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
