@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Registration - JSON Form</title>
+    <title>AI Job Matching - Get Started</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -31,6 +31,13 @@
             text-align: center;
             margin-bottom: 30px;
             font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
         }
         
         .form-group {
@@ -107,15 +114,10 @@
             border: 1px solid #fab1a0;
         }
         
-        .debug-info {
-            margin-top: 20px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 12px;
-            color: #666;
-            border-left: 4px solid #667eea;
+        .info {
+            background: #e8f4fd;
+            color: #2d5aa0;
+            border: 1px solid #a8c8ec;
         }
         
         .loader {
@@ -132,11 +134,23 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        .help-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-top: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
     </style>
 </head>
 <body>
     <div class="form-container">
-        <h1>🎯 User Registration</h1>
+        <h1>🎯 AI Job Matching</h1>
+        <p class="subtitle">Enter your email to get started with personalized job matches</p>
         
         <form id="registrationForm">
             <div class="form-group">
@@ -152,17 +166,17 @@
             </div>
             
             <button type="submit" id="submitBtn">
-                Register Now
+                Get Started
             </button>
         </form>
         
         <div id="message" class="message"></div>
         
-        <div class="debug-info">
-            <strong>🔍 Debug Info:</strong><br>
-            • Form sends JSON data<br>
-            • Headers: Content-Type: application/json<br>
-            • Check browser console for request details
+        <div class="help-text">
+            <strong>📌 How it works:</strong><br>
+            • New user? We'll help you set up your profile<br>
+            • Returning? We'll show your latest job matches<br>
+            • No passwords needed - just your email!
         </div>
     </div>
 
@@ -189,14 +203,14 @@
             
             // Update button state
             submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loader"></span>Sending...';
+            submitBtn.innerHTML = '<span class="loader"></span>Processing...';
             hideMessage();
             
-            console.log('🚀 Sending registration data:', formData);
+            console.log('🚀 Sending data:', formData);
             
             try {
-                // Send JSON data to n8n webhook
-                const response = await fetch('https://laveychaudhary.app.n8n.cloud/webhook/user-registration', {
+                // Using your existing webhook endpoint
+                const response = await fetch('http://localhost:5678/webhook/user-registration', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -212,7 +226,20 @@
                     const result = await response.json();
                     console.log('✅ Success response:', result);
                     
-                    showMessage('🎉 Registration successful! Welcome aboard!', 'success');
+                    // Check if this is a new user or returning user
+                    if (result.is_new_user === false) {
+                        // Existing user - welcome back message
+                        showMessage('👋 Welcome back! Taking you to your job matches...', 'info');
+                        setTimeout(() => {
+                            window.location.href = '/dashboard.html?user_id=' + result.user_id;
+                        }, 2000);
+                    } else {
+                        // New user or default - go to profile setup
+                        showMessage('🎉 Welcome! Let\'s set up your profile...', 'success');
+                        setTimeout(() => {
+                            window.location.href = '/profile-setup.html?user_id=' + result.user_id;
+                        }, 2000);
+                    }
                     
                     // Reset form
                     emailInput.value = '';
@@ -223,10 +250,10 @@
                 }
                 
             } catch (error) {
-                console.error('❌ Registration error:', error);
+                console.error('❌ Error:', error);
                 
                 if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    showMessage('🔌 Connection error: Please check your n8n webhook is active', 'error');
+                    showMessage('🔌 Connection error: Please check if n8n is running on localhost:5678', 'error');
                 } else if (error.message.includes('CORS')) {
                     showMessage('🚫 CORS error: Please check n8n webhook CORS settings', 'error');
                 } else {
@@ -235,7 +262,7 @@
             } finally {
                 // Reset button state
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Register Now';
+                submitBtn.innerHTML = 'Get Started';
             }
         });
         
@@ -252,8 +279,9 @@
         }
         
         // Debug: Log when page loads
-        console.log('🎯 Registration form loaded - Ready to send JSON data!');
-        console.log('🔗 Webhook URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration');
+        console.log('🎯 Smart auth form loaded - Ready to send JSON data!');
+        console.log('🔗 Webhook URL: http://localhost:5678/webhook/user-registration');
     </script>
 </body>
 </html>
+
