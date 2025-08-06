@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup - AI Job Matching</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .next-steps {
+            background: #e8f4fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2d5aa0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Profile Setup</h1>
+        
+        <div class="user-info">
+            <h3>✅ Registration Successful!</h3>
+            <p><strong>Your User ID:</strong> <span id="userId"></span></p>
+            <p><strong>Status:</strong> Ready to set up profile</p>
+        </div>
+        
+        <div class="next-steps">
+            <h3>🚀 Next Steps:</h3>
+            <p>This is where you'll build the profile setup form with:</p>
+            <ul>
+                <li>Skills input (JavaScript, Python, etc.)</li>
+                <li>Experience level (Entry, Mid, Senior)</li>
+                <li>Salary expectations</li>
+                <li>Resume upload</li>
+                <li>Location preferences</li>
+            </ul>
+            <p><strong>For now, this confirms your registration system is working perfectly!</strong></p>
+        </div>
+    </div>
+
+    <script>
+        // Get user_id from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id');
+        
+        console.log('🎯 Profile setup page loaded');
+        console.log('🆔 User ID from URL:', userId);
+        
+        // Display the user ID
+        document.getElementById('userId').textContent = userId || 'Not found';
+        
+        if (userId) {
+            console.log('✅ Successfully received user_id:', userId);
+            console.log('🎉 Registration → Profile flow working perfectly!');
+        } else {
+            console.error('❌ No user_id found in URL');
+        }
+    </script>
+</body>
+</html>
