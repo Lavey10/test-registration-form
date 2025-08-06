@@ -145,6 +145,17 @@
             border-radius: 8px;
             border-left: 4px solid #667eea;
         }
+        
+        .debug-info {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f0f0f0;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 11px;
+            color: #666;
+            border-left: 4px solid #667eea;
+        }
     </style>
 </head>
 <body>
@@ -152,7 +163,7 @@
         <h1>🎯 AI Job Matching</h1>
         <p class="subtitle">Enter your email to get started with personalized job matches</p>
         
-        <form id="registrationForm">
+        <form id="authForm">
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" required 
@@ -178,11 +189,24 @@
             • Returning? We'll show your latest job matches<br>
             • No passwords needed - just your email!
         </div>
+        
+        <div class="debug-info">
+            <strong>🔍 Debug Info:</strong><br>
+            • Webhook URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration<br>
+            • Check browser console (F12) for request details<br>
+            • Form sends JSON data with email and name
+        </div>
     </div>
 
     <script>
-        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+        // Log when page loads
+        console.log('🎯 Smart auth form loaded successfully!');
+        console.log('🔗 Webhook URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration');
+        
+        document.getElementById('authForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            
+            console.log('📝 Form submission started...');
             
             const submitBtn = document.getElementById('submitBtn');
             const messageDiv = document.getElementById('message');
@@ -195,22 +219,36 @@
                 name: nameInput.value.trim()
             };
             
+            console.log('📤 Form data collected:', formData);
+            
             // Validation
             if (!formData.email || !formData.name) {
+                console.error('❌ Validation failed: Missing fields');
                 showMessage('Please fill in all fields', 'error');
                 return;
             }
+            
+            // Email format validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(formData.email)) {
+                console.error('❌ Validation failed: Invalid email format');
+                showMessage('Please enter a valid email address', 'error');
+                return;
+            }
+            
+            console.log('✅ Form validation passed');
             
             // Update button state
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="loader"></span>Processing...';
             hideMessage();
             
-            console.log('🚀 Sending data:', formData);
-            
             try {
-                // Using your existing webhook endpoint
-                const response = await fetch('http://localhost:5678/webhook/user-registration', {
+                console.log('🚀 Sending request to n8n webhook...');
+                console.log('📍 URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration');
+                console.log('📦 Payload:', JSON.stringify(formData));
+                
+                const response = await fetch('https://laveychaudhary.app.n8n.cloud/webhook/user-registration', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -219,48 +257,74 @@
                     body: JSON.stringify(formData)
                 });
                 
-                console.log('📡 Response status:', response.status);
-                console.log('📡 Response headers:', [...response.headers.entries()]);
+                console.log('📡 Response received');
+                console.log('📊 Status:', response.status);
+                console.log('📋 Status Text:', response.statusText);
+                console.log('🔍 Headers:', [...response.headers.entries()]);
                 
                 if (response.ok) {
                     const result = await response.json();
                     console.log('✅ Success response:', result);
                     
-                    // Check if this is a new user or returning user
-                    if (result.is_new_user === false) {
-                        // Existing user - welcome back message
-                        showMessage('👋 Welcome back! Taking you to your job matches...', 'info');
-                        setTimeout(() => {
-                            window.location.href = '/dashboard.html?user_id=' + result.user_id;
-                        }, 2000);
+                    // Handle success
+                    if (result.success) {
+                        // Check if this is a new user or returning user
+                        if (result.is_new_user === false) {
+                            // Existing user - welcome back message
+                            showMessage('👋 Welcome back! Taking you to your job matches...', 'info');
+                            console.log('🔄 Redirecting existing user to dashboard');
+                            setTimeout(() => {
+                                window.location.href = '/dashboard.html?user_id=' + result.user_id;
+                            }, 2000);
+                        } else {
+                            // New user or default - go to profile setup
+                            showMessage('🎉 Welcome! Let\'s set up your profile...', 'success');
+                            console.log('🔄 Redirecting new user to profile setup');
+                            setTimeout(() => {
+                                window.location.href = '/profile-setup.html?user_id=' + result.user_id;
+                            }, 2000);
+                        }
+                        
+                        // Reset form
+                        emailInput.value = '';
+                        nameInput.value = '';
                     } else {
-                        // New user or default - go to profile setup
-                        showMessage('🎉 Welcome! Let\'s set up your profile...', 'success');
-                        setTimeout(() => {
-                            window.location.href = '/profile-setup.html?user_id=' + result.user_id;
-                        }, 2000);
+                        throw new Error(result.message || 'Unknown server error');
                     }
                     
-                    // Reset form
-                    emailInput.value = '';
-                    nameInput.value = '';
-                    
                 } else {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    console.error('❌ HTTP Error:', response.status, response.statusText);
+                    
+                    let errorMessage;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || 'Server error';
+                    } catch {
+                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    }
+                    
+                    throw new Error(errorMessage);
                 }
                 
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('❌ Request failed:', error);
                 
+                let errorMessage;
                 if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    showMessage('🔌 Connection error: Please check if n8n is running on localhost:5678', 'error');
+                    errorMessage = '🔌 Connection error: Cannot reach the server. Please check your internet connection.';
                 } else if (error.message.includes('CORS')) {
-                    showMessage('🚫 CORS error: Please check n8n webhook CORS settings', 'error');
+                    errorMessage = '🚫 CORS error: Server configuration issue. Please contact support.';
+                } else if (error.message.includes('NetworkError')) {
+                    errorMessage = '🌐 Network error: Please check your connection and try again.';
                 } else {
-                    showMessage(`❌ Error: ${error.message}`, 'error');
+                    errorMessage = `❌ Error: ${error.message}`;
                 }
+                
+                showMessage(errorMessage, 'error');
+                
             } finally {
                 // Reset button state
+                console.log('🔄 Resetting button state');
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Get Started';
             }
@@ -271,6 +335,7 @@
             messageDiv.textContent = text;
             messageDiv.className = `message ${type}`;
             messageDiv.style.display = 'block';
+            console.log(`💬 Showing ${type} message:`, text);
         }
         
         function hideMessage() {
@@ -278,10 +343,17 @@
             messageDiv.style.display = 'none';
         }
         
-        // Debug: Log when page loads
-        console.log('🎯 Smart auth form loaded - Ready to send JSON data!');
-        console.log('🔗 Webhook URL: http://localhost:5678/webhook/user-registration');
+        // Test connection on load
+        console.log('🧪 Testing if n8n webhook is reachable...');
+        fetch('https://laveychaudhary.app.n8n.cloud/webhook/user-registration', {
+            method: 'HEAD'
+        }).then(response => {
+            console.log('✅ Webhook endpoint is reachable:', response.status);
+        }).catch(error => {
+            console.warn('⚠️ Webhook endpoint test failed:', error.message);
+        });
     </script>
 </body>
 </html>
+
 
