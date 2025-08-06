@@ -196,7 +196,7 @@
             
             try {
                 // Send JSON data to n8n webhook
-                const response = await fetch('http://localhost:5678/webhook/user-registration', {
+                const response = await fetch('https://laveychaudhary.app.n8n.cloud/webhook/user-registration', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -226,7 +226,7 @@
                 console.error('❌ Registration error:', error);
                 
                 if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    showMessage('🔌 Connection error: Please check if n8n is running on localhost:5678', 'error');
+                    showMessage('🔌 Connection error: Please check your n8n webhook is active', 'error');
                 } else if (error.message.includes('CORS')) {
                     showMessage('🚫 CORS error: Please check n8n webhook CORS settings', 'error');
                 } else {
@@ -253,8 +253,7 @@
         
         // Debug: Log when page loads
         console.log('🎯 Registration form loaded - Ready to send JSON data!');
-        console.log('🔗 Webhook URL: http://localhost:5678/webhook/user-registration');
+        console.log('🔗 Webhook URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration');
     </script>
 </body>
 </html>
-
