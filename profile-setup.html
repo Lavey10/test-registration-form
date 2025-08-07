@@ -21,27 +21,7 @@
             padding: 20px;
         }
 
-        .container {
-            display: flex;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
-            width: 100%;
-            max-width: 1200px;
-            min-height: 600px;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 350px;
-            padding: 40px 30px;
-            color: white;
-            position: relative;
-        }
-
-        .sidebar::before {
+        body::before {
             content: '';
             position: absolute;
             top: -50%;
@@ -61,100 +41,84 @@
             66% { transform: translate(-20px, 20px) rotate(240deg); }
         }
 
+        .container {
+            display: flex;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 600px;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 300px;
+            padding: 50px 0;
+            color: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
         .sidebar-content {
             position: relative;
             z-index: 1;
+            text-align: center;
         }
 
         .logo {
-            font-size: 32px;
+            font-size: 42px;
             font-weight: 800;
-            margin-bottom: 8px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
+            gap: 12px;
             background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,1) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        .subtitle {
-            font-size: 16px;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 40px;
-            line-height: 1.5;
-        }
-
-        .progress-section {
-            margin-bottom: 40px;
-        }
-
-        .progress-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
-        .progress-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 14px;
-        }
-
-        .progress-item:last-child {
-            border-bottom: none;
-        }
-
-        .progress-icon {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            flex-shrink: 0;
-            transition: all 0.3s ease;
-        }
-
-        .progress-icon.completed {
-            background: rgba(16, 185, 129, 1);
-            color: white;
-        }
-
-        .progress-icon.active {
-            background: rgba(255,255,255,1);
-            color: #667eea;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
-        }
-
-        .progress-text {
-            color: rgba(255,255,255,0.7);
-            transition: all 0.3s ease;
-        }
-
-        .progress-item.completed .progress-text {
-            color: rgba(255,255,255,1);
-        }
-
-        .progress-item.active .progress-text {
-            color: rgba(255,255,255,1);
-            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         /* Main Content */
         .main-content {
             flex: 1;
-            padding: 40px;
+            padding: 50px 60px;
             overflow-y: auto;
             max-height: 100vh;
             background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
         }
 
         .form-header {
@@ -609,6 +573,10 @@
                 padding: 20px 15px;
             }
         }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -785,7 +753,7 @@
 
             initSkillsDatabase() {
                 return [
-                    // Programming Languages & Frameworks
+                    // Programming Languages
                     { name: 'JavaScript', category: 'Programming' },
                     { name: 'TypeScript', category: 'Programming' },
                     { name: 'Python', category: 'Programming' },
@@ -801,11 +769,6 @@
                     { name: 'Scala', category: 'Programming' },
                     { name: 'R', category: 'Programming' },
                     { name: 'MATLAB', category: 'Programming' },
-                    { name: 'Perl', category: 'Programming' },
-                    { name: 'Dart', category: 'Programming' },
-                    { name: 'Elixir', category: 'Programming' },
-                    { name: 'Clojure', category: 'Programming' },
-                    { name: 'Haskell', category: 'Programming' },
 
                     // Web Development
                     { name: 'React', category: 'Web Dev' },
@@ -814,20 +777,14 @@
                     { name: 'Node.js', category: 'Web Dev' },
                     { name: 'Express.js', category: 'Web Dev' },
                     { name: 'Next.js', category: 'Web Dev' },
-                    { name: 'Nuxt.js', category: 'Web Dev' },
-                    { name: 'Svelte', category: 'Web Dev' },
                     { name: 'HTML', category: 'Web Dev' },
                     { name: 'CSS', category: 'Web Dev' },
                     { name: 'Sass', category: 'Web Dev' },
-                    { name: 'Less', category: 'Web Dev' },
                     { name: 'Bootstrap', category: 'Web Dev' },
                     { name: 'Tailwind CSS', category: 'Web Dev' },
                     { name: 'jQuery', category: 'Web Dev' },
                     { name: 'GraphQL', category: 'Web Dev' },
                     { name: 'REST API', category: 'Web Dev' },
-                    { name: 'WebSockets', category: 'Web Dev' },
-                    { name: 'Progressive Web Apps', category: 'Web Dev' },
-                    { name: 'Single Page Applications', category: 'Web Dev' },
 
                     // Mobile Development
                     { name: 'React Native', category: 'Mobile Dev' },
@@ -836,7 +793,6 @@
                     { name: 'Android Development', category: 'Mobile Dev' },
                     { name: 'Xamarin', category: 'Mobile Dev' },
                     { name: 'Ionic', category: 'Mobile Dev' },
-                    { name: 'Cordova', category: 'Mobile Dev' },
 
                     // Databases
                     { name: 'MySQL', category: 'Database' },
@@ -848,32 +804,19 @@
                     { name: 'Microsoft SQL Server', category: 'Database' },
                     { name: 'Firebase', category: 'Database' },
                     { name: 'DynamoDB', category: 'Database' },
-                    { name: 'Elasticsearch', category: 'Database' },
-                    { name: 'Neo4j', category: 'Database' },
-                    { name: 'Cassandra', category: 'Database' },
-                    { name: 'CouchDB', category: 'Database' },
 
                     // Cloud & DevOps
                     { name: 'AWS', category: 'Cloud' },
                     { name: 'Azure', category: 'Cloud' },
                     { name: 'Google Cloud Platform', category: 'Cloud' },
-                    { name: 'DigitalOcean', category: 'Cloud' },
-                    { name: 'Heroku', category: 'Cloud' },
-                    { name: 'Vercel', category: 'Cloud' },
-                    { name: 'Netlify', category: 'Cloud' },
                     { name: 'Docker', category: 'DevOps' },
                     { name: 'Kubernetes', category: 'DevOps' },
                     { name: 'Jenkins', category: 'DevOps' },
-                    { name: 'GitLab CI/CD', category: 'DevOps' },
-                    { name: 'GitHub Actions', category: 'DevOps' },
                     { name: 'Git', category: 'DevOps' },
+                    { name: 'GitHub', category: 'DevOps' },
+                    { name: 'GitLab', category: 'DevOps' },
                     { name: 'Terraform', category: 'DevOps' },
                     { name: 'Ansible', category: 'DevOps' },
-                    { name: 'Vagrant', category: 'DevOps' },
-                    { name: 'Chef', category: 'DevOps' },
-                    { name: 'Puppet', category: 'DevOps' },
-                    { name: 'Linux Administration', category: 'DevOps' },
-                    { name: 'Shell Scripting', category: 'DevOps' },
 
                     // Data Science & AI
                     { name: 'Machine Learning', category: 'Data Science' },
@@ -881,7 +824,549 @@
                     { name: 'Artificial Intelligence', category: 'Data Science' },
                     { name: 'Data Analysis', category: 'Data Science' },
                     { name: 'Data Visualization', category: 'Data Science' },
-                    { name: 'Natural Language Processing', category: 'Data Science' },
-                    { name: 'Computer Vision', category: 'Data Science' },
                     { name: 'TensorFlow', category: 'Data Science' },
-                    { name: 'PyTorch', category
+                    { name: 'PyTorch', category: 'Data Science' },
+                    { name: 'Pandas', category: 'Data Science' },
+                    { name: 'NumPy', category: 'Data Science' },
+                    { name: 'Tableau', category: 'Data Science' },
+                    { name: 'Power BI', category: 'Data Science' },
+                    { name: 'SQL', category: 'Data Science' },
+                    { name: 'Statistics', category: 'Data Science' },
+
+                    // Design & UX
+                    { name: 'UI/UX Design', category: 'Design' },
+                    { name: 'Figma', category: 'Design' },
+                    { name: 'Adobe Photoshop', category: 'Design' },
+                    { name: 'Adobe Illustrator', category: 'Design' },
+                    { name: 'Adobe XD', category: 'Design' },
+                    { name: 'Sketch', category: 'Design' },
+                    { name: 'Wireframing', category: 'Design' },
+                    { name: 'Prototyping', category: 'Design' },
+                    { name: 'Graphic Design', category: 'Design' },
+
+                    // Management & Business
+                    { name: 'Project Management', category: 'Management' },
+                    { name: 'Team Leadership', category: 'Management' },
+                    { name: 'Scrum', category: 'Management' },
+                    { name: 'Agile', category: 'Management' },
+                    { name: 'Product Management', category: 'Management' },
+                    { name: 'Business Analysis', category: 'Management' },
+                    { name: 'Strategic Planning', category: 'Management' },
+                    { name: 'Risk Management', category: 'Management' },
+
+                    // Soft Skills
+                    { name: 'Communication', category: 'Soft Skills' },
+                    { name: 'Leadership', category: 'Soft Skills' },
+                    { name: 'Problem Solving', category: 'Soft Skills' },
+                    { name: 'Critical Thinking', category: 'Soft Skills' },
+                    { name: 'Teamwork', category: 'Soft Skills' },
+                    { name: 'Time Management', category: 'Soft Skills' },
+                    { name: 'Adaptability', category: 'Soft Skills' },
+                    { name: 'Creativity', category: 'Soft Skills' },
+                    { name: 'Attention to Detail', category: 'Soft Skills' },
+                    { name: 'Public Speaking', category: 'Soft Skills' },
+
+                    // Tools & Software
+                    { name: 'Jira', category: 'Tools' },
+                    { name: 'Confluence', category: 'Tools' },
+                    { name: 'Slack', category: 'Tools' },
+                    { name: 'Microsoft Office', category: 'Tools' },
+                    { name: 'Google Workspace', category: 'Tools' },
+                    { name: 'Trello', category: 'Tools' },
+                    { name: 'Asana', category: 'Tools' },
+                    { name: 'Salesforce', category: 'Tools' },
+                    { name: 'HubSpot', category: 'Tools' },
+                    { name: 'Notion', category: 'Tools' },
+
+                    // Marketing & Sales
+                    { name: 'Digital Marketing', category: 'Marketing' },
+                    { name: 'SEO', category: 'Marketing' },
+                    { name: 'SEM', category: 'Marketing' },
+                    { name: 'Social Media Marketing', category: 'Marketing' },
+                    { name: 'Content Marketing', category: 'Marketing' },
+                    { name: 'Email Marketing', category: 'Marketing' },
+                    { name: 'Google Analytics', category: 'Marketing' },
+                    { name: 'Facebook Ads', category: 'Marketing' },
+                    { name: 'Google Ads', category: 'Marketing' },
+                    { name: 'Customer Service', category: 'Sales' },
+                    { name: 'Sales Strategy', category: 'Sales' },
+                    { name: 'CRM', category: 'Sales' },
+
+                    // Finance & Accounting
+                    { name: 'Financial Analysis', category: 'Finance' },
+                    { name: 'Accounting', category: 'Finance' },
+                    { name: 'Budgeting', category: 'Finance' },
+                    { name: 'Financial Modeling', category: 'Finance' },
+                    { name: 'QuickBooks', category: 'Finance' },
+                    { name: 'Excel', category: 'Finance' },
+                    { name: 'SAP', category: 'Finance' },
+                    { name: 'Tax Preparation', category: 'Finance' },
+
+                    // Languages
+                    { name: 'English', category: 'Languages' },
+                    { name: 'Spanish', category: 'Languages' },
+                    { name: 'French', category: 'Languages' },
+                    { name: 'German', category: 'Languages' },
+                    { name: 'Mandarin', category: 'Languages' },
+                    { name: 'Japanese', category: 'Languages' },
+                    { name: 'Arabic', category: 'Languages' },
+                    { name: 'Portuguese', category: 'Languages' },
+                    { name: 'Italian', category: 'Languages' },
+                    { name: 'Hindi', category: 'Languages' }
+                ];
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.loadUserData();
+            }
+
+            setupEventListeners() {
+                // Experience level selection
+                document.querySelectorAll('.experience-card').forEach(card => {
+                    card.addEventListener('click', () => this.selectExperience(card));
+                });
+
+                // Skills input
+                const skillInput = document.getElementById('skillInput');
+                skillInput.addEventListener('input', (e) => this.handleSkillSearch(e));
+                skillInput.addEventListener('keydown', (e) => this.handleSkillKeydown(e));
+                skillInput.addEventListener('focus', () => {
+                    if (skillInput.value.trim()) {
+                        this.handleSkillSearch({ target: skillInput });
+                    }
+                });
+                skillInput.addEventListener('blur', (e) => {
+                    // Delay hiding to allow click on dropdown items
+                    setTimeout(() => this.hideDropdown(), 200);
+                });
+
+                // Click outside to close dropdown
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.skills-container')) {
+                        this.hideDropdown();
+                    }
+                });
+
+                // File upload
+                const fileUpload = document.getElementById('resumeUpload');
+                const fileInput = document.getElementById('resumeFile');
+                
+                fileUpload.addEventListener('click', () => fileInput.click());
+                fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
+                
+                // Drag and drop
+                fileUpload.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    fileUpload.classList.add('dragover');
+                });
+                
+                fileUpload.addEventListener('dragleave', () => {
+                    fileUpload.classList.remove('dragover');
+                });
+                
+                fileUpload.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    fileUpload.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        this.processFile(files[0]);
+                    }
+                });
+
+                // Form submission
+                document.getElementById('profileForm').addEventListener('submit', (e) => this.handleSubmit(e));
+            }
+
+            loadUserData() {
+                // Get user_id from URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const userId = urlParams.get('user_id');
+                
+                if (!userId) {
+                    this.showMessage('User ID not found. Please register again.', 'error');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 3000);
+                    return;
+                }
+                
+                console.log('👤 User ID:', userId);
+                document.getElementById('profileForm').dataset.userId = userId;
+            }
+
+            selectExperience(selectedCard) {
+                // Remove selection from all cards
+                document.querySelectorAll('.experience-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+
+                // Add selection to clicked card
+                selectedCard.classList.add('selected');
+                document.getElementById('experienceLevel').value = selectedCard.dataset.experience;
+            }
+
+            handleSkillSearch(event) {
+                const query = event.target.value.toLowerCase().trim();
+                
+                if (query.length === 0) {
+                    this.hideDropdown();
+                    return;
+                }
+                
+                // Filter skills based on search query
+                this.filteredSkills = this.skillsDatabase.filter(skill => 
+                    skill.name.toLowerCase().includes(query) && 
+                    !this.skills.includes(skill.name)
+                ).slice(0, 8); // Show max 8 results
+                
+                this.renderDropdown();
+                this.selectedDropdownIndex = -1;
+            }
+
+            handleSkillKeydown(event) {
+                const dropdown = document.getElementById('skillsDropdown');
+                
+                if (!dropdown.classList.contains('show') || this.filteredSkills.length === 0) {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        const skillName = event.target.value.trim();
+                        if (skillName) {
+                            this.addSkill(skillName);
+                            event.target.value = '';
+                            this.hideDropdown();
+                        }
+                    }
+                    return;
+                }
+                
+                switch (event.key) {
+                    case 'ArrowDown':
+                        event.preventDefault();
+                        this.selectedDropdownIndex = Math.min(
+                            this.selectedDropdownIndex + 1, 
+                            this.filteredSkills.length - 1
+                        );
+                        this.updateDropdownHighlight();
+                        break;
+                        
+                    case 'ArrowUp':
+                        event.preventDefault();
+                        this.selectedDropdownIndex = Math.max(this.selectedDropdownIndex - 1, -1);
+                        this.updateDropdownHighlight();
+                        break;
+                        
+                    case 'Enter':
+                        event.preventDefault();
+                        if (this.selectedDropdownIndex >= 0 && this.selectedDropdownIndex < this.filteredSkills.length) {
+                            this.addSkill(this.filteredSkills[this.selectedDropdownIndex].name);
+                        } else {
+                            // Add custom skill if no dropdown selection
+                            const skillName = event.target.value.trim();
+                            if (skillName) {
+                                this.addSkill(skillName);
+                            }
+                        }
+                        event.target.value = '';
+                        this.hideDropdown();
+                        break;
+                        
+                    case 'Escape':
+                        this.hideDropdown();
+                        event.target.blur();
+                        break;
+                }
+            }
+
+            renderDropdown() {
+                const dropdown = document.getElementById('skillsDropdown');
+                
+                if (this.filteredSkills.length === 0) {
+                    dropdown.innerHTML = '<div class="dropdown-item" style="color: #9ca3af; cursor: default;">No matching skills found</div>';
+                } else {
+                    dropdown.innerHTML = this.filteredSkills.map((skill, index) => `
+                        <div class="dropdown-item" data-skill="${skill.name}" data-index="${index}">
+                            <span>${skill.name}</span>
+                            <span class="skill-category-tag">${skill.category}</span>
+                        </div>
+                    `).join('');
+                    
+                    // Add click handlers to dropdown items
+                    dropdown.querySelectorAll('.dropdown-item[data-skill]').forEach(item => {
+                        item.addEventListener('mousedown', (e) => {
+                            e.preventDefault(); // Prevent blur event
+                        });
+                        
+                        item.addEventListener('click', () => {
+                            this.addSkill(item.dataset.skill);
+                            document.getElementById('skillInput').value = '';
+                            this.hideDropdown();
+                            document.getElementById('skillInput').focus();
+                        });
+                        
+                        item.addEventListener('mouseenter', () => {
+                            this.selectedDropdownIndex = parseInt(item.dataset.index);
+                            this.updateDropdownHighlight();
+                        });
+                    });
+                }
+                
+                this.showDropdown();
+            }
+
+            updateDropdownHighlight() {
+                const items = document.querySelectorAll('#skillsDropdown .dropdown-item[data-skill]');
+                items.forEach((item, index) => {
+                    item.classList.toggle('highlighted', index === this.selectedDropdownIndex);
+                });
+            }
+
+            showDropdown() {
+                const dropdown = document.getElementById('skillsDropdown');
+                dropdown.classList.add('show');
+            }
+
+            hideDropdown() {
+                const dropdown = document.getElementById('skillsDropdown');
+                dropdown.classList.remove('show');
+                this.selectedDropdownIndex = -1;
+            }
+
+            addSkill(skillName) {
+                if (!skillName || skillName.length < 2) {
+                    return;
+                }
+
+                // Check if skill already exists (case insensitive)
+                if (this.skills.some(skill => skill.toLowerCase() === skillName.toLowerCase())) {
+                    this.showMessage('Skill already added', 'info');
+                    return;
+                }
+
+                // Add skill to array
+                this.skills.push(skillName);
+                
+                // Create skill tag element
+                const skillTag = document.createElement('div');
+                skillTag.className = 'skill-tag';
+                skillTag.innerHTML = `
+                    <span>${skillName}</span>
+                    <button type="button" class="remove-skill" data-skill="${skillName}">×</button>
+                `;
+
+                // Add remove functionality
+                skillTag.querySelector('.remove-skill').addEventListener('click', () => {
+                    this.removeSkill(skillName);
+                    skillTag.remove();
+                });
+
+                // Add to skills container
+                document.getElementById('skillsTags').appendChild(skillTag);
+                
+                // Hide placeholder if skills exist
+                const placeholder = document.getElementById('skillsPlaceholder');
+                if (this.skills.length > 0) {
+                    placeholder.classList.add('hidden');
+                }
+                
+                // Update hidden input
+                document.getElementById('skills').value = JSON.stringify(this.skills);
+                
+                console.log('✅ Skill added:', skillName);
+            }
+
+            removeSkill(skillName) {
+                this.skills = this.skills.filter(skill => skill !== skillName);
+                
+                // Show placeholder if no skills left
+                const placeholder = document.getElementById('skillsPlaceholder');
+                if (this.skills.length === 0) {
+                    placeholder.classList.remove('hidden');
+                }
+                
+                document.getElementById('skills').value = JSON.stringify(this.skills);
+                console.log('❌ Skill removed:', skillName);
+            }
+
+            handleFileUpload(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    this.processFile(file);
+                }
+            }
+
+            processFile(file) {
+                // Validate file type
+                const allowedTypes = ['application/pdf', 'application/msword', 
+                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                if (!allowedTypes.includes(file.type)) {
+                    this.showMessage('Please upload a PDF, DOC, or DOCX file', 'error');
+                    return;
+                }
+
+                // Validate file size (5MB max)
+                if (file.size > 5 * 1024 * 1024) {
+                    this.showMessage('File size must be less than 5MB', 'error');
+                    return;
+                }
+
+                this.uploadedFile = file;
+                this.displayUploadedFile(file);
+            }
+
+            displayUploadedFile(file) {
+                const fileInfo = document.getElementById('uploadedFileInfo');
+                const fileSize = (file.size / 1024 / 1024).toFixed(2);
+                
+                fileInfo.innerHTML = `
+                    <div class="uploaded-file">
+                        <div class="file-icon">📄</div>
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${fileSize} MB</div>
+                        </div>
+                        <button type="button" onclick="this.parentElement.remove(); document.getElementById('resumeFile').value = ''; profileSetup.uploadedFile = null;" 
+                                style="background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer;">×</button>
+                    </div>
+                `;
+            }
+
+            validateForm() {
+                const requiredFields = [
+                    { id: 'professionalTitle', message: 'Professional title is required' },
+                    { id: 'location', message: 'Location is required' },
+                    { id: 'experienceLevel', message: 'Please select your experience level' },
+                    { id: 'yearsExperience', message: 'Years of experience is required' },
+                    { id: 'salaryMin', message: 'Minimum salary is required' },
+                    { id: 'salaryMax', message: 'Maximum salary is required' },
+                    { id: 'currency', message: 'Currency is required' }
+                ];
+
+                for (const field of requiredFields) {
+                    const element = document.getElementById(field.id);
+                    if (!element.value.trim()) {
+                        this.showMessage(field.message, 'error');
+                        element.focus();
+                        return false;
+                    }
+                }
+
+                if (this.skills.length < 3) {
+                    this.showMessage('Please add at least 3 skills', 'error');
+                    document.getElementById('skillInput').focus();
+                    return false;
+                }
+
+                const minSalary = parseInt(document.getElementById('salaryMin').value);
+                const maxSalary = parseInt(document.getElementById('salaryMax').value);
+                
+                if (maxSalary <= minSalary) {
+                    this.showMessage('Maximum salary must be greater than minimum salary', 'error');
+                    document.getElementById('salaryMax').focus();
+                    return false;
+                }
+
+                return true;
+            }
+
+            async handleSubmit(event) {
+                event.preventDefault();
+                
+                if (!this.validateForm()) {
+                    return;
+                }
+
+                const submitBtn = document.getElementById('submitBtn');
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span style="display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s linear infinite; margin-right: 8px;"></span>Completing Profile...';
+
+                try {
+                    const formData = this.collectFormData();
+                    console.log('📤 Submitting profile data:', formData);
+
+                    const response = await fetch('https://laveychaudhary.app.n8n.cloud/webhook/profile-setup', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    console.log('📡 Response status:', response.status);
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('✅ Profile setup successful:', result);
+                        
+                        this.showMessage('🎉 Profile completed successfully! Redirecting to your dashboard...', 'success');
+                        
+                        setTimeout(() => {
+                            window.location.href = `/dashboard.html?user_id=${formData.user_id}`;
+                        }, 2000);
+                        
+                    } else {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                } catch (error) {
+                    console.error('❌ Profile setup failed:', error);
+                    this.showMessage('Failed to complete profile. Please try again.', 'error');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Complete Profile Setup';
+                }
+            }
+
+            collectFormData() {
+                const formData = {
+                    user_id: document.getElementById('profileForm').dataset.userId,
+                    
+                    // Basic Information
+                    professionalTitle: document.getElementById('professionalTitle').value.trim(),
+                    location: document.getElementById('location').value.trim(),
+                    
+                    // Experience
+                    experienceLevel: document.getElementById('experienceLevel').value,
+                    yearsExperience: parseInt(document.getElementById('yearsExperience').value),
+                    
+                    // Skills
+                    skills: this.skills,
+                    
+                    // Salary Expectations
+                    salaryMin: parseInt(document.getElementById('salaryMin').value),
+                    salaryMax: parseInt(document.getElementById('salaryMax').value),
+                    currency: document.getElementById('currency').value,
+                    
+                    // Metadata
+                    timestamp: new Date().toISOString(),
+                    hasResume: !!this.uploadedFile,
+                    resumeFileName: this.uploadedFile ? this.uploadedFile.name : null,
+                    profileComplete: true
+                };
+
+                return formData;
+            }
+
+            showMessage(text, type) {
+                const messageDiv = document.getElementById('message');
+                messageDiv.textContent = text;
+                messageDiv.className = `message ${type}`;
+                messageDiv.style.display = 'block';
+                
+                // Auto hide after 5 seconds for non-error messages
+                if (type !== 'error') {
+                    setTimeout(() => {
+                        messageDiv.style.display = 'none';
+                    }, 5000);
+                }
+                
+                console.log(`💬 ${type.toUpperCase()}: ${text}`);
+            }
+        }
+
+        // Initialize when page loads
+        const profileSetup = new ProfileSetup();
+    </script>
+</body>
+</html>
