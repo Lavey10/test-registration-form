@@ -5,13 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Dashboard - JobMatcher</title>
     
-    <!-- React CDN -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- React CDN - Using specific versions and development builds for better error messages -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
     
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <!-- Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone@7.22.5/babel.min.js"></script>
     
     <style>
         * {
@@ -76,7 +75,6 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
-            cursor: pointer;
         }
 
         .stat-card:hover {
@@ -165,9 +163,6 @@
             font-weight: 600;
             font-size: 16px;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
         }
 
         .refresh-btn:hover {
@@ -356,8 +351,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            border: none;
-            cursor: pointer;
         }
 
         .apply-btn:hover {
@@ -392,6 +385,20 @@
             color: #6b7280;
             margin-bottom: 32px;
             font-size: 18px;
+        }
+
+        /* Debug styles */
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            z-index: 1000;
+            display: none;
         }
 
         @media (max-width: 768px) {
@@ -442,265 +449,323 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <!-- Debug info -->
+    <div id="debug-info" class="debug-info"></div>
+    
+    <!-- React will render here -->
+    <div id="root">
+        <div class="container">
+            <div class="loading">
+                <h3>🔄 Initializing React Dashboard...</h3>
+                <p>If this message persists, there may be a script loading issue</p>
+            </div>
+        </div>
+    </div>
 
+    <script>
+        // Debug function to check if scripts loaded
+        window.debugReact = function() {
+            const debug = document.getElementById('debug-info');
+            debug.style.display = 'block';
+            debug.innerHTML = `
+                React: ${typeof React !== 'undefined' ? '✅' : '❌'}<br>
+                ReactDOM: ${typeof ReactDOM !== 'undefined' ? '✅' : '❌'}<br>
+                Babel: ${typeof Babel !== 'undefined' ? '✅' : '❌'}
+            `;
+        };
+        
+        // Show debug info after 2 seconds
+        setTimeout(window.debugReact, 2000);
+        
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            console.error('Global error:', e.error);
+            const debug = document.getElementById('debug-info');
+            debug.style.display = 'block';
+            debug.innerHTML += `<br>Error: ${e.message}`;
+        });
+    </script>
+
+    <!-- React Component Script -->
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        // Wait for all dependencies to load
+        function waitForDependencies() {
+            if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                console.log('Waiting for React dependencies...');
+                setTimeout(waitForDependencies, 100);
+                return;
+            }
+            
+            console.log('✅ React dependencies loaded, initializing app...');
+            initializeApp();
+        }
 
-        // Configuration - UPDATE THIS WITH YOUR ACTUAL n8n INSTANCE URL
-        const API_BASE_URL = 'https://laveychaudhary.app.n8n.cloud';
+        function initializeApp() {
+            const { useState, useEffect } = React;
 
-        function JobDashboard() {
-            const [loading, setLoading] = useState(true);
-            const [error, setError] = useState(null);
-            const [dashboardData, setDashboardData] = useState(null);
-            const [searchTerm, setSearchTerm] = useState('');
-            const [scoreFilter, setScoreFilter] = useState('all');
-            const [filteredMatches, setFilteredMatches] = useState([]);
+            // Configuration - Already set to your instance
+            const API_BASE_URL = 'https://laveychaudhary.app.n8n.cloud';
 
-            // Get user ID from URL parameters
-            const getUserId = () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                return urlParams.get('user_id') || 'demo_user';
-            };
+            function JobDashboard() {
+                const [loading, setLoading] = useState(true);
+                const [error, setError] = useState(null);
+                const [dashboardData, setDashboardData] = useState(null);
+                const [searchTerm, setSearchTerm] = useState('');
+                const [scoreFilter, setScoreFilter] = useState('all');
+                const [filteredMatches, setFilteredMatches] = useState([]);
 
-            // Load dashboard data
-            const loadDashboard = async () => {
-                const userId = getUserId();
-                setLoading(true);
-                setError(null);
+                // Get user ID from URL parameters
+                const getUserId = () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get('user_id') || 'demo_user';
+                };
 
-                try {
-                    const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                // Load dashboard data
+                const loadDashboard = async () => {
+                    const userId = getUserId();
+                    setLoading(true);
+                    setError(null);
+
+                    try {
+                        console.log(`🔄 Loading dashboard for user: ${userId}`);
+                        const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        console.log('✅ Dashboard data loaded:', data);
+                        setDashboardData(data);
+                        setFilteredMatches(data.matches || []);
+                        
+                    } catch (error) {
+                        console.error('❌ Error loading dashboard:', error);
+                        setError('Unable to load job matches. Please try refreshing the page.');
+                    } finally {
+                        setLoading(false);
                     }
-                    
-                    const data = await response.json();
-                    setDashboardData(data);
-                    setFilteredMatches(data.matches || []);
-                    
-                } catch (error) {
-                    console.error('Error loading dashboard:', error);
-                    setError('Unable to load job matches. Please try refreshing the page.');
-                } finally {
-                    setLoading(false);
-                }
-            };
+                };
 
-            // Filter matches based on search and score filter
-            useEffect(() => {
-                if (!dashboardData?.matches) return;
+                // Filter matches based on search and score filter
+                useEffect(() => {
+                    if (!dashboardData?.matches) return;
 
-                let filtered = dashboardData.matches;
+                    let filtered = dashboardData.matches;
 
-                // Apply search filter
-                if (searchTerm) {
-                    filtered = filtered.filter(match =>
-                        match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        match.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        match.location?.toLowerCase().includes(searchTerm.toLowerCase())
+                    // Apply search filter
+                    if (searchTerm) {
+                        filtered = filtered.filter(match =>
+                            match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.location?.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                    }
+
+                    // Apply score filter
+                    if (scoreFilter !== 'all') {
+                        if (scoreFilter === 'excellent') {
+                            filtered = filtered.filter(match => match.match_score >= 80);
+                        } else if (scoreFilter === 'good') {
+                            filtered = filtered.filter(match => match.match_score >= 70 && match.match_score < 80);
+                        } else if (scoreFilter === 'fair') {
+                            filtered = filtered.filter(match => match.match_score < 70);
+                        }
+                    }
+
+                    setFilteredMatches(filtered);
+                }, [dashboardData, searchTerm, scoreFilter]);
+
+                // Load dashboard on component mount
+                useEffect(() => {
+                    loadDashboard();
+                }, []);
+
+                const getScoreClass = (score) => {
+                    if (score >= 80) return 'excellent';
+                    if (score >= 70) return 'good';
+                    return 'fair';
+                };
+
+                const getScoreLabel = (score) => {
+                    if (score >= 80) return 'Excellent';
+                    if (score >= 70) return 'Good';
+                    return 'Fair';
+                };
+
+                if (loading) {
+                    return (
+                        <div className="container">
+                            <div className="loading">
+                                <h3>🔄 Loading your job matches...</h3>
+                                <p>Please wait while we fetch your personalized recommendations</p>
+                            </div>
+                        </div>
                     );
                 }
 
-                // Apply score filter
-                if (scoreFilter !== 'all') {
-                    if (scoreFilter === 'excellent') {
-                        filtered = filtered.filter(match => match.match_score >= 80);
-                    } else if (scoreFilter === 'good') {
-                        filtered = filtered.filter(match => match.match_score >= 70 && match.match_score < 80);
-                    } else if (scoreFilter === 'fair') {
-                        filtered = filtered.filter(match => match.match_score < 70);
-                    }
-                }
-
-                setFilteredMatches(filtered);
-            }, [dashboardData, searchTerm, scoreFilter]);
-
-            // Load dashboard on component mount
-            useEffect(() => {
-                loadDashboard();
-            }, []);
-
-            const getScoreClass = (score) => {
-                if (score >= 80) return 'excellent';
-                if (score >= 70) return 'good';
-                return 'fair';
-            };
-
-            const getScoreLabel = (score) => {
-                if (score >= 80) return 'Excellent';
-                if (score >= 70) return 'Good';
-                return 'Fair';
-            };
-
-            if (loading) {
-                return (
-                    <div className="container">
-                        <div className="loading">
-                            <h3>🔄 Loading your job matches...</h3>
-                            <p>Please wait while we fetch your personalized recommendations</p>
-                        </div>
-                    </div>
-                );
-            }
-
-            if (error) {
-                return (
-                    <div className="container">
-                        <div className="error">
-                            <h3>⚠️ Unable to load matches</h3>
-                            <p>{error}</p>
-                            <button className="refresh-btn" onClick={loadDashboard} style={{marginTop: '16px'}}>
-                                🔄 Try Again
-                            </button>
-                        </div>
-                    </div>
-                );
-            }
-
-            return (
-                <div className="container">
-                    {/* Header */}
-                    <div className="header">
-                        <h1>🎯 Your Job Dashboard</h1>
-                        <p>AI-powered job matches tailored for your skills and experience</p>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="stats-grid">
-                        <div className="stat-card">
-                            <div className="stat-number">{dashboardData?.stats?.total_matches || 0}</div>
-                            <div className="stat-label">Total Matches</div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-number">{dashboardData?.stats?.excellent_matches || 0}</div>
-                            <div className="stat-label">Excellent (80%+)</div>
-                        </div>
-                        <div className="stat-card">
-                            <div className="stat-number">{dashboardData?.stats?.good_matches || 0}</div>
-                            <div className="stat-label">Good (70%+)</div>
-                        </div>
-                    </div>
-
-                    {/* Controls */}
-                    <div className="controls">
-                        <div className="controls-header">
-                            <div>
-                                <h2 style={{margin: '0 0 4px 0', color: '#1f2937'}}>Your Job Matches</h2>
-                                <p style={{margin: 0, color: '#6b7280'}}>
-                                    Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || 0} matches
-                                </p>
-                            </div>
-                            <button className="refresh-btn" onClick={loadDashboard}>
-                                🔄 Refresh
-                            </button>
-                        </div>
-
-                        <div className="search-filter">
-                            <input
-                                type="text"
-                                className="search-input"
-                                placeholder="🔍 Search jobs, companies, or locations..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                            <select
-                                className="filter-select"
-                                value={scoreFilter}
-                                onChange={(e) => setScoreFilter(e.target.value)}
-                            >
-                                <option value="all">All Matches</option>
-                                <option value="excellent">Excellent (80%+)</option>
-                                <option value="good">Good (70-79%)</option>
-                                <option value="fair">Fair (&lt;70%)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    {/* Job Matches */}
-                    <div className="matches-container">
-                        {filteredMatches.length === 0 ? (
-                            <div className="empty-state">
-                                <h3>No matches found</h3>
-                                <p>Try adjusting your search or filter criteria</p>
-                                <button className="refresh-btn" onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}>
-                                    ✨ Show All Matches
+                if (error) {
+                    return (
+                        <div className="container">
+                            <div className="error">
+                                <h3>⚠️ Unable to load matches</h3>
+                                <p>{error}</p>
+                                <button className="refresh-btn" onClick={loadDashboard} style={{marginTop: '16px'}}>
+                                    🔄 Try Again
                                 </button>
                             </div>
-                        ) : (
-                            filteredMatches.map((match, index) => (
-                                <div key={match.id || index} className={`match-card ${getScoreClass(match.match_score)}`}>
-                                    <div className="match-header">
-                                        <div className="job-info">
-                                            <h3>{match.job_title || 'Job Title Not Available'}</h3>
-                                            <div className="job-meta">
-                                                <span><strong>{match.company || 'Company'}</strong></span>
-                                                <span>•</span>
-                                                <span>📍 {match.location || 'Location'}</span>
-                                            </div>
-                                        </div>
-                                        <div className="score-container">
-                                            <div className={`score-badge ${getScoreClass(match.match_score)}`}>
-                                                {match.match_score}%
-                                            </div>
-                                            <div className="score-label">{getScoreLabel(match.match_score)}</div>
-                                        </div>
-                                    </div>
+                        </div>
+                    );
+                }
 
-                                    <div className="match-details">
-                                        <div className="reasoning">
-                                            <strong>🤖 AI Analysis:</strong> {match.reasoning || 'Analysis not available'}
-                                        </div>
+                return (
+                    <div className="container">
+                        {/* Header */}
+                        <div className="header">
+                            <h1>🎯 Your Job Dashboard</h1>
+                            <p>AI-powered job matches tailored for your skills and experience</p>
+                        </div>
 
-                                        <div className="skills-section">
-                                            <div className="skills-group skills-have">
-                                                <h4>✅ You Have</h4>
-                                                <div className="skills-list">
-                                                    {match.matching_skills || 'No skills listed'}
-                                                </div>
-                                            </div>
-                                            <div className="skills-group skills-need">
-                                                <h4>📚 To Learn</h4>
-                                                <div className="skills-list">
-                                                    {match.missing_skills || 'None required'}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                        {/* Stats */}
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.total_matches || 0}</div>
+                                <div className="stat-label">Total Matches</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || 0}</div>
+                                <div className="stat-label">Excellent (80%+)</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.good_matches || 0}</div>
+                                <div className="stat-label">Good (70%+)</div>
+                            </div>
+                        </div>
 
-                                    <div className="match-actions">
-                                        <a 
-                                            href={match.apply_url || '#'} 
-                                            target="_blank" 
-                                            rel="noopener noreferrer"
-                                            className="apply-btn"
-                                        >
-                                            🚀 Apply Now
-                                        </a>
-                                        <div className="job-meta-info">
-                                            <span>📅 {match.created_date || 'Recently'}</span>
-                                            <span>💼 {match.job_type || 'Full-time'}</span>
-                                            <span>💰 {match.salary_info || 'Salary not specified'}</span>
-                                        </div>
-                                    </div>
+                        {/* Controls */}
+                        <div className="controls">
+                            <div className="controls-header">
+                                <div>
+                                    <h2 style={{margin: '0 0 4px 0', color: '#1f2937'}}>Your Job Matches</h2>
+                                    <p style={{margin: 0, color: '#6b7280'}}>
+                                        Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || 0} matches
+                                    </p>
                                 </div>
-                            ))
-                        )}
-                    </div>
+                                <button className="refresh-btn" onClick={loadDashboard}>
+                                    🔄 Refresh
+                                </button>
+                            </div>
 
-                    {/* Footer */}
-                    <div style={{textAlign: 'center', marginTop: '40px', color: 'rgba(255,255,255,0.7)'}}>
-                        <p>Dashboard updates daily with new job matches</p>
-                        <p><a href="mailto:support@jobmatcher.com" style={{color: 'rgba(255,255,255,0.9)'}}>Need help?</a></p>
+                            <div className="search-filter">
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder="🔍 Search jobs, companies, or locations..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <select
+                                    className="filter-select"
+                                    value={scoreFilter}
+                                    onChange={(e) => setScoreFilter(e.target.value)}
+                                >
+                                    <option value="all">All Matches</option>
+                                    <option value="excellent">Excellent (80%+)</option>
+                                    <option value="good">Good (70-79%)</option>
+                                    <option value="fair">Fair (&lt;70%)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Job Matches */}
+                        <div className="matches-container">
+                            {filteredMatches.length === 0 ? (
+                                <div className="empty-state">
+                                    <h3>No matches found</h3>
+                                    <p>Try adjusting your search or filter criteria</p>
+                                    <button className="refresh-btn" onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}>
+                                        ✨ Show All Matches
+                                    </button>
+                                </div>
+                            ) : (
+                                filteredMatches.map((match, index) => (
+                                    <div key={match.id || index} className={`match-card ${getScoreClass(match.match_score)}`}>
+                                        <div className="match-header">
+                                            <div className="job-info">
+                                                <h3>{match.job_title || 'Job Title Not Available'}</h3>
+                                                <div className="job-meta">
+                                                    <span><strong>{match.company || 'Company'}</strong></span>
+                                                    <span>•</span>
+                                                    <span>📍 {match.location || 'Location'}</span>
+                                                </div>
+                                            </div>
+                                            <div className="score-container">
+                                                <div className={`score-badge ${getScoreClass(match.match_score)}`}>
+                                                    {match.match_score}%
+                                                </div>
+                                                <div className="score-label">{getScoreLabel(match.match_score)}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-details">
+                                            <div className="reasoning">
+                                                <strong>🤖 AI Analysis:</strong> {match.reasoning || 'Analysis not available'}
+                                            </div>
+
+                                            <div className="skills-section">
+                                                <div className="skills-group skills-have">
+                                                    <h4>✅ You Have</h4>
+                                                    <div className="skills-list">
+                                                        {match.matching_skills || 'No skills listed'}
+                                                    </div>
+                                                </div>
+                                                <div className="skills-group skills-need">
+                                                    <h4>📚 To Learn</h4>
+                                                    <div className="skills-list">
+                                                        {match.missing_skills || 'None required'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-actions">
+                                            <a 
+                                                href={match.apply_url || '#'} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="apply-btn"
+                                            >
+                                                🚀 Apply Now
+                                            </a>
+                                            <div className="job-meta-info">
+                                                <span>📅 {match.created_date || 'Recently'}</span>
+                                                <span>💼 {match.job_type || 'Full-time'}</span>
+                                                <span>💰 {match.salary_info || 'Salary not specified'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div style={{textAlign: 'center', marginTop: '40px', color: 'rgba(255,255,255,0.7)'}}>
+                            <p>Dashboard updates daily with new job matches</p>
+                            <p><a href="mailto:support@jobmatcher.com" style={{color: 'rgba(255,255,255,0.9)'}}>Need help?</a></p>
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            }
+
+            // Render the dashboard
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(JobDashboard));
+            
+            console.log('✅ React app initialized successfully!');
         }
 
-        // Render the dashboard
-        ReactDOM.render(<JobDashboard />, document.getElementById('root'));
+        // Start the initialization process
+        waitForDependencies();
     </script>
 </body>
 </html>
