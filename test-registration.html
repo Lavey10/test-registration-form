@@ -409,22 +409,44 @@
                     const result = await response.json();
                     console.log('✅ Success response:', result);
                     
+                    // ✅ ENHANCED DEBUG LOGGING
+                    console.log('=== FRONTEND RESPONSE DEBUG ===');
+                    console.log('Full result:', result);
+                    console.log('result.success:', result.success);
+                    console.log('result.is_new_user:', result.is_new_user);
+                    console.log('result.profile_completed:', result.profile_completed);
+                    console.log('result.redirect_type:', result.redirect_type);
+                    console.log('result.user_id:', result.user_id);
+                    
                     // Handle success
                     if (result.success) {
                         // Check if this is a new user or returning user
                         if (result.is_new_user === false) {
-                            // Existing user - welcome back message
-                            showMessage('👋 Welcome back! Taking you to your job matches...', 'info');
-                            console.log('🔄 Redirecting existing user to dashboard');
-                            setTimeout(() => {
-                                window.location.href = '/dashboard.html?user_id=' + result.user_id;
-                            }, 2000);
+                            // Existing user - check redirect type or profile completion
+                            console.log('🔄 Existing user detected');
+                            
+                            if (result.redirect_type === "dashboard" || result.profile_completed === true) {
+                                showMessage('👋 Welcome back! Taking you to your job dashboard...', 'info');
+                                console.log('🔄 Redirecting existing user to dashboard');
+                                console.log('Dashboard URL:', `https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${result.user_id}`);
+                                setTimeout(() => {
+                                    window.location.href = `https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${result.user_id}`;
+                                }, 2000);
+                            } else {
+                                showMessage('👋 Welcome back! Completing your profile...', 'info');
+                                console.log('🔄 Redirecting existing user to profile setup');
+                                setTimeout(() => {
+                                    window.location.href = `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}`;
+                                }, 2000);
+                            }
                         } else {
                             // New user or default - go to profile setup
+                            console.log('🔄 New user detected');
                             showMessage('🎉 Welcome! Let\'s set up your profile...', 'success');
                             console.log('🔄 Redirecting new user to profile setup');
+                            console.log('Profile setup URL:', `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}`);
                             setTimeout(() => {
-                                window.location.href = '/profile-setup.html?user_id=' + result.user_id;
+                                window.location.href = `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}`;
                             }, 2000);
                         }
                         
@@ -498,4 +520,3 @@
     </script>
 </body>
 </html>
-
