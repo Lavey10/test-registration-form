@@ -392,6 +392,32 @@
             line-height: 1.6;
         }
 
+        .job-description {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(243, 244, 246, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .job-description h4 {
+            fontSize: 16px;
+            fontWeight: 600;
+            marginBottom: 8px;
+            color: #374151;
+            display: flex;
+            alignItems: center;
+            gap: 8px;
+        }
+
+        .job-description-content {
+            fontSize: 14px;
+            lineHeight: 1.6;
+            color: #6b7280;
+            maxHeight: 120px;
+            overflowY: auto;
+        }
+
         .reasoning {
             color: #374151;
             margin-bottom: 20px;
@@ -488,19 +514,7 @@
             font-size: 18px;
         }
 
-        /* Debug styles */
-        .debug-info {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 12px;
-            z-index: 1000;
-            display: none;
-        }
+
 
         @media (max-width: 768px) {
             .container {
@@ -559,9 +573,7 @@
     </style>
 </head>
 <body>
-    <!-- Debug info -->
-    <div id="debug-info" class="debug-info"></div>
-    
+
     <!-- React will render here -->
     <div id="root">
         <div class="container">
@@ -572,29 +584,7 @@
         </div>
     </div>
 
-    <script>
-        // Debug function to check if scripts loaded
-        window.debugReact = function() {
-            const debug = document.getElementById('debug-info');
-            debug.style.display = 'block';
-            debug.innerHTML = `
-                React: ${typeof React !== 'undefined' ? '✅' : '❌'}<br>
-                ReactDOM: ${typeof ReactDOM !== 'undefined' ? '✅' : '❌'}<br>
-                Babel: ${typeof Babel !== 'undefined' ? '✅' : '❌'}
-            `;
-        };
-        
-        // Show debug info after 2 seconds
-        setTimeout(window.debugReact, 2000);
-        
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            console.error('Global error:', e.error);
-            const debug = document.getElementById('debug-info');
-            debug.style.display = 'block';
-            debug.innerHTML += `<br>Error: ${e.message}`;
-        });
-    </script>
+
 
     <!-- React Component Script -->
     <script type="text/babel">
@@ -799,7 +789,8 @@
                         filtered = filtered.filter(match =>
                             match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             match.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            match.location?.toLowerCase().includes(searchTerm.toLowerCase())
+                            match.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_description?.toLowerCase().includes(searchTerm.toLowerCase())
                         );
                     }
 
@@ -961,7 +952,7 @@
                                 <input
                                     type="text"
                                     className="search-input"
-                                    placeholder="🔍 Search jobs, companies, or locations..."
+                                    placeholder="🔍 Search jobs, companies, locations, or descriptions..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -995,9 +986,9 @@
                                             <div className="job-info">
                                                 <h3>{match.job_title || 'Job Title Not Available'}</h3>
                                                 <div className="job-meta">
-                                                    <span><strong>{match.company || 'Company'}</strong></span>
+                                                    <span><strong>{match.job_company || match.company || 'Company'}</strong></span>
                                                     <span>•</span>
-                                                    <span>📍 {match.location || 'Location'}</span>
+                                                    <span>📍 {match.job_location || match.location || 'Location'}</span>
                                                 </div>
                                             </div>
                                             <div className="score-container">
@@ -1009,8 +1000,37 @@
                                         </div>
 
                                         <div className="match-details">
+                                            {/* ✅ JOB DESCRIPTION SECTION */}
+                                            {match.job_description && (
+                                                <div className="job-description">
+                                                    <h4 style={{
+                                                        fontSize: '16px',
+                                                        fontWeight: '600',
+                                                        marginBottom: '8px',
+                                                        color: '#374151',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px'
+                                                    }}>
+                                                        📝 Job Description
+                                                    </h4>
+                                                    <div className="job-description-content" style={{
+                                                        fontSize: '14px',
+                                                        lineHeight: '1.6',
+                                                        color: '#6b7280',
+                                                        maxHeight: '120px',
+                                                        overflowY: 'auto'
+                                                    }}>
+                                                        {match.job_description.length > 300 
+                                                            ? `${match.job_description.substring(0, 300)}...` 
+                                                            : match.job_description
+                                                        }
+                                                    </div>
+                                                </div>
+                                            )}
+
                                             <div className="reasoning">
-                                                <strong>🤖 AI Analysis:</strong> {match.reasoning || 'Analysis not available'}
+                                                <strong>🤖 AI Analysis:</strong> {match.ai_reasoning || match.reasoning || 'Analysis not available'}
                                             </div>
 
                                             <div className="skills-section">
@@ -1031,7 +1051,7 @@
 
                                         <div className="match-actions">
                                             <a 
-                                                href={match.apply_url || '#'} 
+                                                href={match.job_url || match.apply_url || '#'} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer"
                                                 className="apply-btn"
@@ -1041,7 +1061,7 @@
                                             <div className="job-meta-info">
                                                 <span>📅 {match.created_date || 'Recently'}</span>
                                                 <span>💼 {match.job_type || 'Full-time'}</span>
-                                                <span>💰 {match.salary_info || 'Salary not specified'}</span>
+                                                <span>💰 {match.job_salary || match.salary_info || 'Salary not specified'}</span>
                                             </div>
                                         </div>
                                     </div>
