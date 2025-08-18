@@ -411,8 +411,27 @@
             font-size: 14px;
             line-height: 1.6;
             color: #6b7280;
-            max-height: 120px;
+            max-height: 150px;
             overflow-y: auto;
+            border: 1px solid rgba(229, 231, 235, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .description-toggle {
+            margin-top: 8px;
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .description-toggle:hover {
+            color: #4f46e5;
         }
 
         .reasoning {
@@ -600,6 +619,7 @@
                 const [showMatchingProgress, setShowMatchingProgress] = useState(false);
                 const [currentStep, setCurrentStep] = useState(1);
                 const [matchingComplete, setMatchingComplete] = useState(false);
+                const [expandedDescriptions, setExpandedDescriptions] = useState({});
 
                 const getUserId = () => {
                     const urlParams = new URLSearchParams(window.location.search);
@@ -773,6 +793,21 @@
                     return 'Fair';
                 };
 
+                const toggleDescription = (matchId) => {
+                    setExpandedDescriptions(prev => ({
+                        ...prev,
+                        [matchId]: !prev[matchId]
+                    }));
+                };
+
+                const formatSkills = (skills) => {
+                    if (!skills || skills === '""' || skills === '"' || skills.trim() === '') {
+                        return 'None required';
+                    }
+                    // Remove quotes if they exist
+                    return skills.replace(/^"(.*)"$/, '$1') || 'None required';
+                };
+
                 if (showMatchingProgress) {
                     if (matchingComplete) {
                         return (
@@ -938,11 +973,19 @@
                                                 <div className="job-description">
                                                     <h4>📝 Job Description</h4>
                                                     <div className="job-description-content">
-                                                        {match.job_description.length > 300 
-                                                            ? `${match.job_description.substring(0, 300)}...` 
-                                                            : match.job_description
+                                                        {expandedDescriptions[match.id || index] || match.job_description.length <= 400
+                                                            ? match.job_description
+                                                            : `${match.job_description.substring(0, 400)}...`
                                                         }
                                                     </div>
+                                                    {match.job_description.length > 400 && (
+                                                        <button 
+                                                            className="description-toggle"
+                                                            onClick={() => toggleDescription(match.id || index)}
+                                                        >
+                                                            {expandedDescriptions[match.id || index] ? 'Show Less' : 'Show More'}
+                                                        </button>
+                                                    )}
                                                 </div>
                                             )}
 
@@ -954,13 +997,13 @@
                                                 <div className="skills-group skills-have">
                                                     <h4>✅ You Have</h4>
                                                     <div className="skills-list">
-                                                        {match.matching_skills || 'No skills listed'}
+                                                        {formatSkills(match.matching_skills)}
                                                     </div>
                                                 </div>
                                                 <div className="skills-group skills-need">
                                                     <h4>📚 To Learn</h4>
                                                     <div className="skills-list">
-                                                        {match.missing_skills || 'None required'}
+                                                        {formatSkills(match.missing_skills)}
                                                     </div>
                                                 </div>
                                             </div>
