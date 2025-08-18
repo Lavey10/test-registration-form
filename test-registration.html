@@ -444,9 +444,9 @@
                             console.log('🔄 New user detected');
                             showMessage('🎉 Welcome! Let\'s set up your profile...', 'success');
                             console.log('🔄 Redirecting new user to profile setup');
-                            console.log('Profile setup URL:', `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}`);
+                            console.log('Profile setup URL:', `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}&is_new_user=true`);
                             setTimeout(() => {
-                                window.location.href = `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}`;
+                                window.location.href = `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}&is_new_user=true`;
                             }, 2000);
                         }
                         
