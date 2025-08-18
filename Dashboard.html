@@ -5,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Job Dashboard - JobMatcher</title>
     
-    <!-- React CDN - Using specific versions and development builds for better error messages -->
+    <!-- React CDN -->
     <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
-    
-    <!-- Babel Standalone for JSX transformation -->
     <script src="https://unpkg.com/@babel/standalone@7.22.5/babel.min.js"></script>
     
     <style>
@@ -59,7 +57,6 @@
             opacity: 0.9;
         }
 
-        /* ✅ PHASE 3: MATCHING PROGRESS STYLES */
         .matching-progress {
             text-align: center;
             padding: 60px 20px;
@@ -401,21 +398,21 @@
         }
 
         .job-description h4 {
-            fontSize: 16px;
-            fontWeight: 600;
-            marginBottom: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
             color: #374151;
             display: flex;
-            alignItems: center;
+            align-items: center;
             gap: 8px;
         }
 
         .job-description-content {
-            fontSize: 14px;
-            lineHeight: 1.6;
+            font-size: 14px;
+            line-height: 1.6;
             color: #6b7280;
-            maxHeight: 120px;
-            overflowY: auto;
+            max-height: 120px;
+            overflow-y: auto;
         }
 
         .reasoning {
@@ -514,8 +511,6 @@
             font-size: 18px;
         }
 
-
-
         @media (max-width: 768px) {
             .container {
                 padding: 16px;
@@ -573,37 +568,26 @@
     </style>
 </head>
 <body>
-
-    <!-- React will render here -->
     <div id="root">
         <div class="container">
             <div class="loading">
-                <h3>🔄 Initializing React Dashboard...</h3>
-                <p>If this message persists, there may be a script loading issue</p>
+                <h3>🔄 Loading Dashboard...</h3>
+                <p>Please wait while we initialize your job dashboard</p>
             </div>
         </div>
     </div>
 
-
-
-    <!-- React Component Script -->
     <script type="text/babel">
-        // Wait for all dependencies to load
         function waitForDependencies() {
             if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
-                console.log('Waiting for React dependencies...');
                 setTimeout(waitForDependencies, 100);
                 return;
             }
-            
-            console.log('✅ React dependencies loaded, initializing app...');
             initializeApp();
         }
 
         function initializeApp() {
             const { useState, useEffect } = React;
-
-            // Configuration - Already set to your instance
             const API_BASE_URL = 'https://laveychaudhary.app.n8n.cloud';
 
             function JobDashboard() {
@@ -613,44 +597,30 @@
                 const [searchTerm, setSearchTerm] = useState('');
                 const [scoreFilter, setScoreFilter] = useState('all');
                 const [filteredMatches, setFilteredMatches] = useState([]);
-                
-                // ✅ PHASE 3: NEW USER MATCHING PROGRESS STATE
                 const [showMatchingProgress, setShowMatchingProgress] = useState(false);
                 const [currentStep, setCurrentStep] = useState(1);
                 const [matchingComplete, setMatchingComplete] = useState(false);
 
-                // Get user ID from URL parameters
                 const getUserId = () => {
                     const urlParams = new URLSearchParams(window.location.search);
                     return urlParams.get('user_id') || 'demo_user';
                 };
 
-                // ✅ PHASE 3: CHECK FOR NEW USER COMPLETION
                 const checkForNewUserCompletion = () => {
                     const justCompleted = sessionStorage.getItem('justCompletedProfile');
                     const completionUserId = sessionStorage.getItem('completionUserId');
                     const currentUserId = getUserId();
                     
-                    console.log('=== DASHBOARD NEW USER CHECK ===');
-                    console.log('Just completed:', justCompleted);
-                    console.log('Completion user ID:', completionUserId);
-                    console.log('Current user ID:', currentUserId);
-                    
                     if (justCompleted === 'true' && completionUserId === currentUserId) {
-                        // Clean up session storage
                         sessionStorage.removeItem('justCompletedProfile');
                         sessionStorage.removeItem('completionUserId');
-                        
-                        console.log('✅ New user detected from profile completion');
                         return true;
                     }
                     return false;
                 };
 
-                // ✅ PHASE 3: TRIGGER IMMEDIATE MATCHING
                 const triggerImmediateMatching = async (userId) => {
                     try {
-                        console.log('🚀 Triggering immediate matching for user:', userId);
                         const response = await fetch(`${API_BASE_URL}/webhook/immediate-job-matching`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -660,18 +630,11 @@
                                 immediate: true
                             })
                         });
-                        
-                        if (response.ok) {
-                            console.log('✅ Immediate matching triggered successfully');
-                        } else {
-                            console.warn('⚠️ Immediate matching request failed:', response.status);
-                        }
                     } catch (error) {
-                        console.error('❌ Failed to trigger immediate matching:', error);
+                        console.error('Failed to trigger immediate matching:', error);
                     }
                 };
 
-                // ✅ PHASE 3: ANIMATE PROGRESS STEPS
                 const animateProgressSteps = () => {
                     const steps = [
                         { step: 1, delay: 0 },
@@ -687,29 +650,21 @@
                     });
                 };
 
-                // ✅ PHASE 3: POLL FOR MATCHES
                 const pollForMatches = (userId) => {
                     let pollCount = 0;
-                    const maxPolls = 24; // 2 minutes max (5s intervals)
-                    
-                    console.log('🔄 Starting to poll for matches...');
+                    const maxPolls = 24;
                     
                     const pollInterval = setInterval(async () => {
                         pollCount++;
                         
                         try {
-                            console.log(`🔍 Polling attempt ${pollCount}/${maxPolls}`);
                             const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
                             
                             if (response.ok) {
                                 const data = await response.json();
-                                console.log('📊 Poll result:', { matchCount: data.matches?.length || 0 });
                                 
                                 if (data.matches && data.matches.length > 0) {
                                     clearInterval(pollInterval);
-                                    console.log('🎉 Matches found! Showing completion animation...');
-                                    
-                                    // Show completion animation
                                     setMatchingComplete(true);
                                     
                                     setTimeout(() => {
@@ -725,40 +680,30 @@
                             
                             if (pollCount >= maxPolls) {
                                 clearInterval(pollInterval);
-                                console.log('⏱️ Polling timeout reached');
                                 setShowMatchingProgress(false);
                                 setLoading(false);
                                 setError('Matching is taking longer than expected. Please refresh the page in a few minutes.');
                             }
                         } catch (error) {
-                            console.error('❌ Polling error:', error);
+                            console.error('Polling error:', error);
                         }
-                    }, 5000); // Poll every 5 seconds
+                    }, 5000);
                 };
 
-                // ✅ PHASE 3: SHOW MATCHING PROGRESS
                 const showMatchingProgressUI = async (userId) => {
                     setShowMatchingProgress(true);
                     setLoading(false);
-                    
-                    // Trigger immediate matching
                     await triggerImmediateMatching(userId);
-                    
-                    // Start progress animation
                     animateProgressSteps();
-                    
-                    // Start polling for matches
                     pollForMatches(userId);
                 };
 
-                // Load dashboard data (for existing users)
                 const loadDashboard = async () => {
                     const userId = getUserId();
                     setLoading(true);
                     setError(null);
 
                     try {
-                        console.log(`🔄 Loading dashboard for user: ${userId}`);
                         const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
                         
                         if (!response.ok) {
@@ -766,35 +711,33 @@
                         }
                         
                         const data = await response.json();
-                        console.log('✅ Dashboard data loaded:', data);
                         setDashboardData(data);
                         setFilteredMatches(data.matches || []);
                         
                     } catch (error) {
-                        console.error('❌ Error loading dashboard:', error);
+                        console.error('Error loading dashboard:', error);
                         setError('Unable to load job matches. Please try refreshing the page.');
                     } finally {
                         setLoading(false);
                     }
                 };
 
-                // Filter matches based on search and score filter
                 useEffect(() => {
                     if (!dashboardData?.matches) return;
 
                     let filtered = dashboardData.matches;
 
-                    // Apply search filter
                     if (searchTerm) {
                         filtered = filtered.filter(match =>
                             match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             match.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             match.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             match.job_description?.toLowerCase().includes(searchTerm.toLowerCase())
                         );
                     }
 
-                    // Apply score filter
                     if (scoreFilter !== 'all') {
                         if (scoreFilter === 'excellent') {
                             filtered = filtered.filter(match => match.match_score >= 80);
@@ -808,16 +751,12 @@
                     setFilteredMatches(filtered);
                 }, [dashboardData, searchTerm, scoreFilter]);
 
-                // ✅ PHASE 3: MAIN DASHBOARD LOAD LOGIC
                 useEffect(() => {
                     const userId = getUserId();
                     
-                    // Check if this is a new user who just completed profile
                     if (checkForNewUserCompletion()) {
-                        // New user - show matching progress
                         showMatchingProgressUI(userId);
                     } else {
-                        // Existing user - load dashboard normally
                         loadDashboard();
                     }
                 }, []);
@@ -834,7 +773,6 @@
                     return 'Fair';
                 };
 
-                // ✅ PHASE 3: MATCHING PROGRESS COMPONENT
                 if (showMatchingProgress) {
                     if (matchingComplete) {
                         return (
@@ -912,13 +850,11 @@
 
                 return (
                     <div className="container">
-                        {/* Header */}
                         <div className="header">
                             <h1>🎯 Your Job Dashboard</h1>
                             <p>AI-powered job matches tailored for your skills and experience</p>
                         </div>
 
-                        {/* Stats */}
                         <div className="stats-grid">
                             <div className="stat-card">
                                 <div className="stat-number">{dashboardData?.stats?.total_matches || (dashboardData?.matches?.length || 0)}</div>
@@ -934,7 +870,6 @@
                             </div>
                         </div>
 
-                        {/* Controls */}
                         <div className="controls">
                             <div className="controls-header">
                                 <div>
@@ -969,7 +904,6 @@
                             </div>
                         </div>
 
-                        {/* Job Matches */}
                         <div className="matches-container">
                             {filteredMatches.length === 0 ? (
                                 <div className="empty-state">
@@ -1000,27 +934,10 @@
                                         </div>
 
                                         <div className="match-details">
-                                            {/* ✅ JOB DESCRIPTION SECTION */}
                                             {match.job_description && (
                                                 <div className="job-description">
-                                                    <h4 style={{
-                                                        fontSize: '16px',
-                                                        fontWeight: '600',
-                                                        marginBottom: '8px',
-                                                        color: '#374151',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '8px'
-                                                    }}>
-                                                        📝 Job Description
-                                                    </h4>
-                                                    <div className="job-description-content" style={{
-                                                        fontSize: '14px',
-                                                        lineHeight: '1.6',
-                                                        color: '#6b7280',
-                                                        maxHeight: '120px',
-                                                        overflowY: 'auto'
-                                                    }}>
+                                                    <h4>📝 Job Description</h4>
+                                                    <div className="job-description-content">
                                                         {match.job_description.length > 300 
                                                             ? `${match.job_description.substring(0, 300)}...` 
                                                             : match.job_description
@@ -1069,7 +986,6 @@
                             )}
                         </div>
 
-                        {/* Footer */}
                         <div style={{textAlign: 'center', marginTop: '40px', color: 'rgba(255,255,255,0.7)'}}>
                             <p>Dashboard updates daily with new job matches</p>
                             <p><a href="mailto:support@jobmatcher.com" style={{color: 'rgba(255,255,255,0.9)'}}>Need help?</a></p>
@@ -1078,14 +994,10 @@
                 );
             }
 
-            // Render the dashboard
             const root = ReactDOM.createRoot(document.getElementById('root'));
             root.render(React.createElement(JobDashboard));
-            
-            console.log('✅ React app initialized successfully!');
         }
 
-        // Start the initialization process
         waitForDependencies();
     </script>
 </body>
