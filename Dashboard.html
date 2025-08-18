@@ -747,6 +747,20 @@
 
                     let filtered = dashboardData.matches;
 
+                    // 🔍 DEBUG: Log filtering process
+                    console.log('=== FILTERING DEBUG ===');
+                    console.log('Total matches:', dashboardData.matches.length);
+                    console.log('Current filter:', scoreFilter);
+                    
+                    // Check first few scores
+                    dashboardData.matches.slice(0, 5).forEach((match, index) => {
+                        console.log(`Match ${index + 1}:`, {
+                            title: match.job_title,
+                            score: match.match_score,
+                            type: typeof match.match_score
+                        });
+                    });
+
                     if (searchTerm) {
                         filtered = filtered.filter(match =>
                             match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -759,15 +773,35 @@
                     }
 
                     if (scoreFilter !== 'all') {
+                        console.log('Applying score filter:', scoreFilter);
+                        
                         if (scoreFilter === 'excellent') {
-                            filtered = filtered.filter(match => match.match_score >= 80);
+                            filtered = filtered.filter(match => {
+                                const score = Number(match.match_score);
+                                const passes = score >= 90;
+                                if (passes) console.log('Excellent match:', match.job_title, score);
+                                return passes;
+                            });
                         } else if (scoreFilter === 'good') {
-                            filtered = filtered.filter(match => match.match_score >= 70 && match.match_score < 80);
+                            filtered = filtered.filter(match => {
+                                const score = Number(match.match_score);
+                                const passes = score >= 70 && score < 90;
+                                if (passes) console.log('Good match:', match.job_title, score);
+                                return passes;
+                            });
                         } else if (scoreFilter === 'fair') {
-                            filtered = filtered.filter(match => match.match_score < 70);
+                            filtered = filtered.filter(match => {
+                                const score = Number(match.match_score);
+                                const passes = score < 70;
+                                if (passes) console.log('Fair match:', match.job_title, score);
+                                return passes;
+                            });
                         }
+                        
+                        console.log('After score filter, matches:', filtered.length);
                     }
 
+                    console.log('Final filtered matches:', filtered.length);
                     setFilteredMatches(filtered);
                 }, [dashboardData, searchTerm, scoreFilter]);
 
@@ -782,13 +816,13 @@
                 }, []);
 
                 const getScoreClass = (score) => {
-                    if (score >= 80) return 'excellent';
+                    if (score >= 90) return 'excellent';
                     if (score >= 70) return 'good';
                     return 'fair';
                 };
 
                 const getScoreLabel = (score) => {
-                    if (score >= 80) return 'Excellent';
+                    if (score >= 90) return 'Excellent';
                     if (score >= 70) return 'Good';
                     return 'Fair';
                 };
