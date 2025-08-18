@@ -802,10 +802,10 @@
 
                 const formatSkills = (skills) => {
                     if (!skills || skills === '""' || skills === '"' || skills.trim() === '') {
-                        return 'None required';
+                        return '';
                     }
                     // Remove quotes if they exist
-                    return skills.replace(/^"(.*)"$/, '$1') || 'None required';
+                    return skills.replace(/^"(.*)"$/, '$1') || '';
                 };
 
                 if (showMatchingProgress) {
@@ -896,12 +896,12 @@
                                 <div className="stat-label">Total Matches</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || (dashboardData?.matches?.filter(m => m.match_score >= 80).length || 0)}</div>
-                                <div className="stat-label">Excellent (80%+)</div>
+                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || (dashboardData?.matches?.filter(m => m.match_score >= 90).length || 0)}</div>
+                                <div className="stat-label">Excellent (90%+)</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-number">{dashboardData?.stats?.good_matches || (dashboardData?.matches?.filter(m => m.match_score >= 70 && m.match_score < 80).length || 0)}</div>
-                                <div className="stat-label">Good (70%+)</div>
+                                <div className="stat-number">{dashboardData?.stats?.good_matches || (dashboardData?.matches?.filter(m => m.match_score >= 70 && m.match_score < 90).length || 0)}</div>
+                                <div className="stat-label">Good (70-89%)</div>
                             </div>
                         </div>
 
@@ -932,8 +932,8 @@
                                     onChange={(e) => setScoreFilter(e.target.value)}
                                 >
                                     <option value="all">All Matches</option>
-                                    <option value="excellent">Excellent (80%+)</option>
-                                    <option value="good">Good (70-79%)</option>
+                                    <option value="excellent">Excellent (90%+)</option>
+                                    <option value="good">Good (70-89%)</option>
                                     <option value="fair">Fair (&lt;70%)</option>
                                 </select>
                             </div>
@@ -1003,7 +1003,8 @@
                                                 <div className="skills-group skills-need">
                                                     <h4>📚 To Learn</h4>
                                                     <div className="skills-list">
-                                                        {formatSkills(match.missing_skills)}
+                                                        {formatSkills(match.missing_skills) || 
+                                                         <span style={{color: '#9ca3af', fontStyle: 'italic'}}>No additional skills needed</span>}
                                                     </div>
                                                 </div>
                                             </div>
