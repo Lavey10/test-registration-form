@@ -1,15 +1,961 @@
-console.log('Is new user:', isNewUser);
-console.log('User ID:', userId);
-console.log('Full URL:', window.location.href);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JobPilot - Complete Your Profile</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
+            33% { transform: translate(30px, -30px) rotate(120deg); }
+            66% { transform: translate(-20px, 20px) rotate(240deg); }
+        }
+
+        .container {
+            display: flex;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 600px;
+            border: 1px solid rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+            border-radius: 24px 24px 0 0;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 300px;
+            padding: 50px 0;
+            color: white;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .sidebar-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 42px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,1) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 50px 60px;
+            overflow-y: auto;
+            max-height: 100vh;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+        }
+
+        .form-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .form-subtitle {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .section {
+            margin-bottom: 32px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-row.two-col {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+        }
+
+        /* Experience Level Cards */
+        .experience-levels {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .experience-card {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 16px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .experience-card:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .experience-card.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .experience-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a202c;
+            margin-bottom: 4px;
+        }
+
+        .experience-card p {
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        /* Skills Input */
+        .skills-container {
+            position: relative;
+        }
+
+        .skills-input {
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 12px;
+            min-height: 100px;
+            background: white;
+            transition: all 0.2s ease;
+        }
+
+        .skills-input:focus-within {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .skill-input-field {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 4px 0;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .skill-input-field::placeholder {
+            color: #9ca3af;
+        }
+
+        .skills-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #d1d5db;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .skills-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 10px 12px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background 0.1s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover, .dropdown-item.highlighted {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .skill-category-tag {
+            background: #f3f4f6;
+            color: #6b7280;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 500;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            animation: skillAppear 0.3s ease-out;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .skill-tag .remove-skill {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.2s ease;
+        }
+
+        .skill-tag .remove-skill:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes skillAppear {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .skills-placeholder {
+            color: #9ca3af;
+            font-style: italic;
+            font-size: 12px;
+            text-align: center;
+            padding: 20px;
+            border: 2px dashed #d1d5db;
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+
+        .skills-placeholder.hidden {
+            display: none;
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed #d1d5db;
+            border-radius: 6px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: #fafafa;
+        }
+
+        .file-upload:hover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.02);
+        }
+
+        .file-upload.dragover {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+
+        .file-upload p {
+            color: #374151;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .file-upload small {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .uploaded-file {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .uploaded-file .file-icon {
+            color: #10b981;
+            font-size: 16px;
+        }
+
+        .uploaded-file .file-info {
+            flex: 1;
+        }
+
+        .uploaded-file .file-name {
+            font-weight: 500;
+            color: #1a202c;
+            font-size: 13px;
+        }
+
+        .uploaded-file .file-size {
+            color: #6b7280;
+            font-size: 11px;
+        }
+
+        /* Submit Button */
+        .submit-section {
+            text-align: center;
+            padding-top: 32px;
+            border-top: 1px solid #e5e7eb;
+            margin-top: 40px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            min-width: 250px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-submit:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Messages */
+        .message {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .message.info {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Loading State */
+        .checking-profile {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                padding: 30px 20px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row.two-col {
+                grid-template-columns: 1fr;
+            }
+
+            .experience-levels {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 10px;
+            }
+
+            .experience-levels {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 20px 15px;
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <div class="logo">🎯 JobPilot</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Profile Check Loading State -->
+            <div id="profileCheckLoading" class="checking-profile" style="display: none;">
+                <div class="spinner"></div>
+                <h3>Checking your profile status...</h3>
+                <p>Please wait while we verify your account.</p>
+            </div>
+
+            <!-- Profile Form Container -->
+            <div id="profileFormContainer">
+                <div class="form-header">
+                    <div class="form-title">Complete Your Profile</div>
+                    <div class="form-subtitle">Help us match you with the perfect jobs</div>
+                </div>
+
+                <form id="profileForm">
+                    <!-- Basic Information -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span>📝</span> Basic Information
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="professionalTitle">Professional Title *</label>
+                            <input type="text" id="professionalTitle" name="professionalTitle" required
+                                   placeholder="What's your current or desired job title?">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" name="location" required
+                                   placeholder="Where are you based or prefer to work?">
+                        </div>
+                    </div>
+
+                    <!-- Experience -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span>💼</span> Experience
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Experience Level *</label>
+                            <div class="experience-levels">
+                                <div class="experience-card" data-experience="0-2">
+                                    <h4>Entry Level</h4>
+                                    <p>0-2 years</p>
+                                </div>
+                                <div class="experience-card" data-experience="3-5">
+                                    <h4>Mid Level</h4>
+                                    <p>3-5 years</p>
+                                </div>
+                                <div class="experience-card" data-experience="6-10">
+                                    <h4>Senior</h4>
+                                    <p>6-10 years</p>
+                                </div>
+                                <div class="experience-card" data-experience="10+">
+                                    <h4>Lead/Principal</h4>
+                                    <p>10+ years</p>
+                                </div>
+                            </div>
+                            <input type="hidden" id="experienceLevel" name="experienceLevel" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="yearsExperience">Years of Experience *</label>
+                            <input type="number" id="yearsExperience" name="yearsExperience" required
+                                   placeholder="Enter exact number of years" min="0" max="50">
+                        </div>
+                    </div>
+
+                    <!-- Skills -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span>⚡</span> Skills
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Add Your Skills *</label>
+                            <p style="color: #6b7280; font-size: 13px; margin-bottom: 8px;">
+                                Add at least 3 skills. Press Enter after each skill.
+                            </p>
+                            <div class="skills-container">
+                                <div class="skills-input">
+                                    <input type="text" class="skill-input-field" id="skillInput" 
+                                           placeholder="Start typing to search skills...">
+                                    <div class="skills-dropdown" id="skillsDropdown"></div>
+                                    <div class="skills-tags" id="skillsTags"></div>
+                                    <div class="skills-placeholder" id="skillsPlaceholder">
+                                        Your skills will appear here...
+                                    </div>
+                                </div>
+                            </div>
+                            <input type="hidden" id="skills" name="skills" required>
+                        </div>
+                    </div>
+
+                    <!-- Salary Expectations -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span>💰</span> Salary Expectations
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="salaryMin">Minimum Salary *</label>
+                                <input type="number" id="salaryMin" name="salaryMin" required
+                                       placeholder="e.g. 60000" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="salaryMax">Maximum Salary *</label>
+                                <input type="number" id="salaryMax" name="salaryMax" required
+                                       placeholder="e.g. 120000" min="0" step="1000">
+                            </div>
+                            <div class="form-group">
+                                <label for="currency">Currency *</label>
+                                <select id="currency" name="currency" required>
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="CAD">CAD</option>
+                                    <option value="INR">INR</option>
+                                    <option value="AUD">AUD</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Resume Upload -->
+                    <div class="section">
+                        <div class="section-header">
+                            <span>📄</span> Resume Upload (Optional)
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="file-upload" id="resumeUpload">
+                                <div class="upload-icon">📄</div>
+                                <p><strong>Drag & drop your resume here</strong> or click to browse</p>
+                                <small>Supported formats: PDF, DOC, DOCX (max 5MB)</small>
+                                <input type="file" id="resumeFile" name="resumeFile" 
+                                       accept=".pdf,.doc,.docx" style="display: none;">
+                            </div>
+                            <div id="uploadedFileInfo"></div>
+                        </div>
+                    </div>
+
+                    <div id="message" class="message" style="display: none;"></div>
+
+                    <div class="submit-section">
+                        <button type="submit" id="submitBtn" class="btn-submit">
+                            Complete Profile Setup
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('🎯 JobPilot Profile Setup loaded');
         
-class ProfileSetup {
-constructor() {
-this.skills = [];
-@@ -956,3 +956,545 @@ <h4>Lead/Principal</h4>
-{ name: 'Italian', category: 'Languages' },
-{ name: 'Hindi', category: 'Languages' }
-];
+        // ✅ PHASE 2: NEW USER FLAG DETECTION
+        function getURLParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Capture the new user flag from URL
+        const isNewUser = getURLParameter('is_new_user') === 'true';
+        const userId = getURLParameter('user_id');
+
+        console.log('=== PROFILE SETUP LOADED ===');
+        console.log('Is new user:', isNewUser);
+        console.log('User ID:', userId);
+        console.log('Full URL:', window.location.href);
+        
+        class ProfileSetup {
+            constructor() {
+                this.skills = [];
+                this.uploadedFile = null;
+                this.skillsDatabase = this.initSkillsDatabase();
+                this.filteredSkills = [];
+                this.selectedDropdownIndex = -1;
+                
+                this.init();
+            }
+
+            initSkillsDatabase() {
+                return [
+                    // Programming Languages
+                    { name: 'JavaScript', category: 'Programming' },
+                    { name: 'TypeScript', category: 'Programming' },
+                    { name: 'Python', category: 'Programming' },
+                    { name: 'Java', category: 'Programming' },
+                    { name: 'C++', category: 'Programming' },
+                    { name: 'C#', category: 'Programming' },
+                    { name: 'PHP', category: 'Programming' },
+                    { name: 'Ruby', category: 'Programming' },
+                    { name: 'Go', category: 'Programming' },
+                    { name: 'Rust', category: 'Programming' },
+                    { name: 'Swift', category: 'Programming' },
+                    { name: 'Kotlin', category: 'Programming' },
+                    { name: 'Scala', category: 'Programming' },
+                    { name: 'R', category: 'Programming' },
+                    { name: 'MATLAB', category: 'Programming' },
+
+                    // Web Development
+                    { name: 'React', category: 'Web Dev' },
+                    { name: 'Vue.js', category: 'Web Dev' },
+                    { name: 'Angular', category: 'Web Dev' },
+                    { name: 'Node.js', category: 'Web Dev' },
+                    { name: 'Express.js', category: 'Web Dev' },
+                    { name: 'Next.js', category: 'Web Dev' },
+                    { name: 'HTML', category: 'Web Dev' },
+                    { name: 'CSS', category: 'Web Dev' },
+                    { name: 'Sass', category: 'Web Dev' },
+                    { name: 'Bootstrap', category: 'Web Dev' },
+                    { name: 'Tailwind CSS', category: 'Web Dev' },
+                    { name: 'jQuery', category: 'Web Dev' },
+                    { name: 'GraphQL', category: 'Web Dev' },
+                    { name: 'REST API', category: 'Web Dev' },
+
+                    // Mobile Development
+                    { name: 'React Native', category: 'Mobile Dev' },
+                    { name: 'Flutter', category: 'Mobile Dev' },
+                    { name: 'iOS Development', category: 'Mobile Dev' },
+                    { name: 'Android Development', category: 'Mobile Dev' },
+                    { name: 'Xamarin', category: 'Mobile Dev' },
+                    { name: 'Ionic', category: 'Mobile Dev' },
+
+                    // Databases
+                    { name: 'MySQL', category: 'Database' },
+                    { name: 'PostgreSQL', category: 'Database' },
+                    { name: 'MongoDB', category: 'Database' },
+                    { name: 'Redis', category: 'Database' },
+                    { name: 'SQLite', category: 'Database' },
+                    { name: 'Oracle', category: 'Database' },
+                    { name: 'Microsoft SQL Server', category: 'Database' },
+                    { name: 'Firebase', category: 'Database' },
+                    { name: 'DynamoDB', category: 'Database' },
+
+                    // Cloud & DevOps
+                    { name: 'AWS', category: 'Cloud' },
+                    { name: 'Azure', category: 'Cloud' },
+                    { name: 'Google Cloud Platform', category: 'Cloud' },
+                    { name: 'Docker', category: 'DevOps' },
+                    { name: 'Kubernetes', category: 'DevOps' },
+                    { name: 'Jenkins', category: 'DevOps' },
+                    { name: 'Git', category: 'DevOps' },
+                    { name: 'GitHub', category: 'DevOps' },
+                    { name: 'GitLab', category: 'DevOps' },
+                    { name: 'Terraform', category: 'DevOps' },
+                    { name: 'Ansible', category: 'DevOps' },
+
+                    // Data Science & AI
+                    { name: 'Machine Learning', category: 'Data Science' },
+                    { name: 'Deep Learning', category: 'Data Science' },
+                    { name: 'Artificial Intelligence', category: 'Data Science' },
+                    { name: 'Data Analysis', category: 'Data Science' },
+                    { name: 'Data Visualization', category: 'Data Science' },
+                    { name: 'TensorFlow', category: 'Data Science' },
+                    { name: 'PyTorch', category: 'Data Science' },
+                    { name: 'Pandas', category: 'Data Science' },
+                    { name: 'NumPy', category: 'Data Science' },
+                    { name: 'Tableau', category: 'Data Science' },
+                    { name: 'Power BI', category: 'Data Science' },
+                    { name: 'SQL', category: 'Data Science' },
+                    { name: 'Statistics', category: 'Data Science' },
+
+                    // Design & UX
+                    { name: 'UI/UX Design', category: 'Design' },
+                    { name: 'Figma', category: 'Design' },
+                    { name: 'Adobe Photoshop', category: 'Design' },
+                    { name: 'Adobe Illustrator', category: 'Design' },
+                    { name: 'Adobe XD', category: 'Design' },
+                    { name: 'Sketch', category: 'Design' },
+                    { name: 'Wireframing', category: 'Design' },
+                    { name: 'Prototyping', category: 'Design' },
+                    { name: 'Graphic Design', category: 'Design' },
+
+                    // Management & Business
+                    { name: 'Project Management', category: 'Management' },
+                    { name: 'Team Leadership', category: 'Management' },
+                    { name: 'Scrum', category: 'Management' },
+                    { name: 'Agile', category: 'Management' },
+                    { name: 'Product Management', category: 'Management' },
+                    { name: 'Business Analysis', category: 'Management' },
+                    { name: 'Strategic Planning', category: 'Management' },
+                    { name: 'Risk Management', category: 'Management' },
+
+                    // Soft Skills
+                    { name: 'Communication', category: 'Soft Skills' },
+                    { name: 'Leadership', category: 'Soft Skills' },
+                    { name: 'Problem Solving', category: 'Soft Skills' },
+                    { name: 'Critical Thinking', category: 'Soft Skills' },
+                    { name: 'Teamwork', category: 'Soft Skills' },
+                    { name: 'Time Management', category: 'Soft Skills' },
+                    { name: 'Adaptability', category: 'Soft Skills' },
+                    { name: 'Creativity', category: 'Soft Skills' },
+                    { name: 'Attention to Detail', category: 'Soft Skills' },
+                    { name: 'Public Speaking', category: 'Soft Skills' },
+
+                    // Tools & Software
+                    { name: 'Jira', category: 'Tools' },
+                    { name: 'Confluence', category: 'Tools' },
+                    { name: 'Slack', category: 'Tools' },
+                    { name: 'Microsoft Office', category: 'Tools' },
+                    { name: 'Google Workspace', category: 'Tools' },
+                    { name: 'Trello', category: 'Tools' },
+                    { name: 'Asana', category: 'Tools' },
+                    { name: 'Salesforce', category: 'Tools' },
+                    { name: 'HubSpot', category: 'Tools' },
+                    { name: 'Notion', category: 'Tools' },
+
+                    // Marketing & Sales
+                    { name: 'Digital Marketing', category: 'Marketing' },
+                    { name: 'SEO', category: 'Marketing' },
+                    { name: 'SEM', category: 'Marketing' },
+                    { name: 'Social Media Marketing', category: 'Marketing' },
+                    { name: 'Content Marketing', category: 'Marketing' },
+                    { name: 'Email Marketing', category: 'Marketing' },
+                    { name: 'Google Analytics', category: 'Marketing' },
+                    { name: 'Facebook Ads', category: 'Marketing' },
+                    { name: 'Google Ads', category: 'Marketing' },
+                    { name: 'Customer Service', category: 'Sales' },
+                    { name: 'Sales Strategy', category: 'Sales' },
+                    { name: 'CRM', category: 'Sales' },
+
+                    // Finance & Accounting
+                    { name: 'Financial Analysis', category: 'Finance' },
+                    { name: 'Accounting', category: 'Finance' },
+                    { name: 'Budgeting', category: 'Finance' },
+                    { name: 'Financial Modeling', category: 'Finance' },
+                    { name: 'QuickBooks', category: 'Finance' },
+                    { name: 'Excel', category: 'Finance' },
+                    { name: 'SAP', category: 'Finance' },
+                    { name: 'Tax Preparation', category: 'Finance' },
+
+                    // Languages
+                    { name: 'English', category: 'Languages' },
+                    { name: 'Spanish', category: 'Languages' },
+                    { name: 'French', category: 'Languages' },
+                    { name: 'German', category: 'Languages' },
+                    { name: 'Mandarin', category: 'Languages' },
+                    { name: 'Japanese', category: 'Languages' },
+                    { name: 'Arabic', category: 'Languages' },
+                    { name: 'Portuguese', category: 'Languages' },
+                    { name: 'Italian', category: 'Languages' },
+                    { name: 'Hindi', category: 'Languages' }
+                ];
             }
 
             init() {
