@@ -892,15 +892,15 @@
 
                         <div className="stats-grid">
                             <div className="stat-card">
-                                <div className="stat-number">{dashboardData?.stats?.total_matches || (dashboardData?.matches?.length || 0)}</div>
+                                <div className="stat-number">{dashboardData?.stats?.total_matches || 0}</div>
                                 <div className="stat-label">Total Matches</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || (dashboardData?.matches?.filter(m => m.match_score >= 90).length || 0)}</div>
+                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || 0}</div>
                                 <div className="stat-label">Excellent (90%+)</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-number">{dashboardData?.stats?.good_matches || (dashboardData?.matches?.filter(m => m.match_score >= 70 && m.match_score < 90).length || 0)}</div>
+                                <div className="stat-number">{dashboardData?.stats?.good_matches || 0}</div>
                                 <div className="stat-label">Good (70-89%)</div>
                             </div>
                         </div>
@@ -910,7 +910,7 @@
                                 <div>
                                     <h2 style={{margin: '0 0 4px 0', color: '#1f2937'}}>Your Job Matches</h2>
                                     <p style={{margin: 0, color: '#6b7280'}}>
-                                        Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || (dashboardData?.matches?.length || 0)} matches
+                                        Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || 0} matches
                                     </p>
                                 </div>
                                 <button className="refresh-btn" onClick={loadDashboard}>
