@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobPilot - Complete Your Profile</title>
+    <title>Job Dashboard - JobMatcher</title>
+    
+    <!-- React CDN - Using specific versions and development builds for better error messages -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    
+    <!-- Babel Standalone for JSX transformation -->
+    <script src="https://unpkg.com/@babel/standalone@7.22.5/babel.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -12,1489 +20,1073 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-20px, 20px) rotate(240deg); }
+            color: #1f2937;
         }
 
         .container {
-            display: flex;
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2);
-            overflow: hidden;
-            width: 100%;
             max-width: 1200px;
-            min-height: 600px;
-            border: 1px solid rgba(255,255,255,0.2);
-            position: relative;
-        }
-
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-            border-radius: 24px 24px 0 0;
-        }
-
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 300px;
-            padding: 50px 0;
-            color: white;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sidebar::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        .sidebar-content {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-        }
-
-        .logo {
-            font-size: 42px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,1) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            padding: 50px 60px;
-            overflow-y: auto;
-            max-height: 100vh;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(20px);
-        }
-
-        .form-header {
-            margin-bottom: 30px;
-        }
-
-        .form-title {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 8px;
-        }
-
-        .form-subtitle {
-            color: #64748b;
-            font-size: 16px;
-        }
-
-        .section {
-            margin-bottom: 32px;
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 16px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 16px;
-        }
-
-        .form-row.two-col {
-            grid-template-columns: 1fr 1fr;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.2s ease;
-            background: white;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-1px);
-        }
-
-        /* Experience Level Cards */
-        .experience-levels {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-
-        .experience-card {
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 16px 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            background: white;
-        }
-
-        .experience-card:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-
-        .experience-card.selected {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .experience-card h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 4px;
-        }
-
-        .experience-card p {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        /* Skills Input */
-        .skills-container {
-            position: relative;
-        }
-
-        .skills-input {
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 12px;
-            min-height: 100px;
-            background: white;
-            transition: all 0.2s ease;
-        }
-
-        .skills-input:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .skill-input-field {
-            width: 100%;
-            border: none;
-            background: transparent;
-            padding: 4px 0;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .skill-input-field::placeholder {
-            color: #9ca3af;
-        }
-
-        .skills-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #d1d5db;
-            border-top: none;
-            border-radius: 0 0 6px 6px;
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-            display: none;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .skills-dropdown.show {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 10px 12px;
-            cursor: pointer;
-            border-bottom: 1px solid #f3f4f6;
-            transition: background 0.1s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .dropdown-item:hover, .dropdown-item.highlighted {
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
-        .skill-category-tag {
-            background: #f3f4f6;
-            color: #6b7280;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 10px;
-            font-weight: 500;
-        }
-
-        .skills-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 8px;
-        }
-
-        .skill-tag {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            animation: skillAppear 0.3s ease-out;
-            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
-        }
-
-        .skill-tag .remove-skill {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 12px;
-            transition: background 0.2s ease;
-        }
-
-        .skill-tag .remove-skill:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        @keyframes skillAppear {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .skills-placeholder {
-            color: #9ca3af;
-            font-style: italic;
-            font-size: 12px;
-            text-align: center;
+            margin: 0 auto;
             padding: 20px;
-            border: 2px dashed #d1d5db;
-            border-radius: 6px;
-            margin-top: 8px;
         }
 
-        .skills-placeholder.hidden {
-            display: none;
-        }
-
-        /* File Upload */
-        .file-upload {
-            border: 2px dashed #d1d5db;
-            border-radius: 6px;
-            padding: 40px 20px;
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
             text-align: center;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            background: #fafafa;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .file-upload:hover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.02);
-        }
-
-        .file-upload.dragover {
-            border-color: #667eea;
-            background: rgba(102, 126, 234, 0.05);
-        }
-
-        .upload-icon {
-            font-size: 32px;
-            color: #9ca3af;
+        .header h1 {
+            font-size: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 12px;
+            font-weight: 800;
         }
 
-        .file-upload p {
-            color: #374151;
-            margin-bottom: 4px;
-            font-size: 14px;
-        }
-
-        .file-upload small {
+        .header p {
             color: #6b7280;
-            font-size: 12px;
+            font-size: 18px;
+            opacity: 0.9;
         }
 
-        .uploaded-file {
-            background: rgba(16, 185, 129, 0.05);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 6px;
-            padding: 12px 16px;
+        /* ✅ PHASE 3: MATCHING PROGRESS STYLES */
+        .matching-progress {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e3f2fd;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .matching-progress h3 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .matching-progress p {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .progress-steps {
+            margin-top: 40px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .step {
+            padding: 16px 20px;
+            margin: 12px 0;
+            background: #f8fafc;
+            border-radius: 12px;
+            opacity: 0.5;
+            transition: all 0.4s ease;
+            border-left: 4px solid #e5e7eb;
+            font-size: 16px;
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-top: 12px;
         }
 
-        .uploaded-file .file-icon {
-            color: #10b981;
-            font-size: 16px;
-        }
-
-        .uploaded-file .file-info {
-            flex: 1;
-        }
-
-        .uploaded-file .file-name {
-            font-weight: 500;
-            color: #1a202c;
-            font-size: 13px;
-        }
-
-        .uploaded-file .file-size {
-            color: #6b7280;
-            font-size: 11px;
-        }
-
-        /* Submit Button */
-        .submit-section {
-            text-align: center;
-            padding-top: 32px;
-            border-top: 1px solid #e5e7eb;
-            margin-top: 40px;
-        }
-
-        .btn-submit {
+        .step.active {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            border: none;
-            padding: 16px 48px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            min-width: 250px;
-            position: relative;
-            overflow: hidden;
+            opacity: 1;
+            transform: translateX(10px);
+            border-left-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-submit::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
+        .step-icon {
+            font-size: 20px;
+            min-width: 24px;
         }
 
-        .btn-submit:hover:not(:disabled)::before {
-            left: 100%;
-        }
-
-        .btn-submit:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-submit:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Messages */
-        .message {
-            padding: 12px 16px;
-            border-radius: 6px;
-            margin: 16px 0;
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .message.success {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .message.error {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .message.info {
-            background: rgba(59, 130, 246, 0.1);
-            color: #3b82f6;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        /* Loading State */
-        .checking-profile {
+        .success-animation {
             text-align: center;
             padding: 40px;
         }
 
-        .spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+        .checkmark {
+            width: 100px;
+            height: 100px;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            font-size: 50px;
+            line-height: 100px;
+            margin: 0 auto 30px;
+            animation: pulse 1.5s ease-in-out;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 28px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            min-width: 250px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .match-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            border-left: 6px solid #e5e7eb;
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .match-card.excellent {
+            border-left-color: #22c55e;
+        }
+
+        .match-card.good {
+            border-left-color: #f59e0b;
+        }
+
+        .match-card.fair {
+            border-left-color: #ef4444;
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 20px;
+        }
+
+        .job-info h3 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .job-meta {
+            color: #6b7280;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .score-container {
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .score-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: inline-block;
+            min-width: 80px;
+        }
+
+        .score-badge.excellent {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .score-badge.good {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .score-badge.fair {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .match-details {
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .job-description {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(243, 244, 246, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .job-description h4 {
+            fontSize: 16px;
+            fontWeight: 600;
+            marginBottom: 8px;
+            color: #374151;
+            display: flex;
+            alignItems: center;
+            gap: 8px;
+        }
+
+        .job-description-content {
+            fontSize: 14px;
+            lineHeight: 1.6;
+            color: #6b7280;
+            maxHeight: 120px;
+            overflowY: auto;
+        }
+
+        .reasoning {
+            color: #374151;
+            margin-bottom: 20px;
+            font-size: 16px;
+            padding: 16px;
+            background: rgba(243, 244, 246, 0.5);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .skills-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
             margin-bottom: 20px;
         }
 
-        /* Responsive */
-        @media (max-width: 968px) {
+        .skills-group h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skills-have h4 {
+            color: #059669;
+        }
+
+        .skills-need h4 {
+            color: #dc2626;
+        }
+
+        .skills-list {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .match-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .job-meta-info {
+            display: flex;
+            gap: 20px;
+            color: #9ca3af;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+            margin-bottom: 32px;
+            font-size: 18px;
+        }
+
+
+
+        @media (max-width: 768px) {
             .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .match-header {
                 flex-direction: column;
-                height: auto;
+                align-items: stretch;
             }
 
-            .sidebar {
-                width: 100%;
-                padding: 30px 20px;
+            .controls-header {
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .main-content {
-                padding: 30px 20px;
+            .search-filter {
+                flex-direction: column;
             }
 
-            .form-row {
+            .search-input {
+                min-width: 100%;
+            }
+
+            .skills-section {
                 grid-template-columns: 1fr;
+                gap: 16px;
             }
 
-            .form-row.two-col {
-                grid-template-columns: 1fr;
+            .match-actions {
+                flex-direction: column;
+                align-items: stretch;
             }
 
-            .experience-levels {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 640px) {
-            body {
-                padding: 10px;
+            .job-meta-info {
+                justify-content: center;
             }
 
-            .experience-levels {
-                grid-template-columns: 1fr;
+            .progress-steps {
+                max-width: 100%;
             }
 
-            .main-content {
-                padding: 20px 15px;
+            .step {
+                font-size: 14px;
+                padding: 12px 16px;
             }
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-content">
-                <div class="logo">🎯 JobPilot</div>
-            </div>
-        </div>
 
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Profile Check Loading State -->
-            <div id="profileCheckLoading" class="checking-profile" style="display: none;">
-                <div class="spinner"></div>
-                <h3>Checking your profile status...</h3>
-                <p>Please wait while we verify your account.</p>
-            </div>
-
-            <!-- Profile Form Container -->
-            <div id="profileFormContainer">
-                <div class="form-header">
-                    <div class="form-title">Complete Your Profile</div>
-                    <div class="form-subtitle">Help us match you with the perfect jobs</div>
-                </div>
-
-                <form id="profileForm">
-                    <!-- Basic Information -->
-                    <div class="section">
-                        <div class="section-header">
-                            <span>📝</span> Basic Information
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="professionalTitle">Professional Title *</label>
-                            <input type="text" id="professionalTitle" name="professionalTitle" required
-                                   placeholder="What's your current or desired job title?">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="location">Location *</label>
-                            <input type="text" id="location" name="location" required
-                                   placeholder="Where are you based or prefer to work?">
-                        </div>
-                    </div>
-
-                    <!-- Experience -->
-                    <div class="section">
-                        <div class="section-header">
-                            <span>💼</span> Experience
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Experience Level *</label>
-                            <div class="experience-levels">
-                                <div class="experience-card" data-experience="0-2">
-                                    <h4>Entry Level</h4>
-                                    <p>0-2 years</p>
-                                </div>
-                                <div class="experience-card" data-experience="3-5">
-                                    <h4>Mid Level</h4>
-                                    <p>3-5 years</p>
-                                </div>
-                                <div class="experience-card" data-experience="6-10">
-                                    <h4>Senior</h4>
-                                    <p>6-10 years</p>
-                                </div>
-                                <div class="experience-card" data-experience="10+">
-                                    <h4>Lead/Principal</h4>
-                                    <p>10+ years</p>
-                                </div>
-                            </div>
-                            <input type="hidden" id="experienceLevel" name="experienceLevel" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="yearsExperience">Years of Experience *</label>
-                            <input type="number" id="yearsExperience" name="yearsExperience" required
-                                   placeholder="Enter exact number of years" min="0" max="50">
-                        </div>
-                    </div>
-
-                    <!-- Skills -->
-                    <div class="section">
-                        <div class="section-header">
-                            <span>⚡</span> Skills
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Add Your Skills *</label>
-                            <p style="color: #6b7280; font-size: 13px; margin-bottom: 8px;">
-                                Add at least 3 skills. Press Enter after each skill.
-                            </p>
-                            <div class="skills-container">
-                                <div class="skills-input">
-                                    <input type="text" class="skill-input-field" id="skillInput" 
-                                           placeholder="Start typing to search skills...">
-                                    <div class="skills-dropdown" id="skillsDropdown"></div>
-                                    <div class="skills-tags" id="skillsTags"></div>
-                                    <div class="skills-placeholder" id="skillsPlaceholder">
-                                        Your skills will appear here...
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" id="skills" name="skills" required>
-                        </div>
-                    </div>
-
-                    <!-- Salary Expectations -->
-                    <div class="section">
-                        <div class="section-header">
-                            <span>💰</span> Salary Expectations
-                        </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="salaryMin">Minimum Salary *</label>
-                                <input type="number" id="salaryMin" name="salaryMin" required
-                                       placeholder="e.g. 60000" min="0" step="1000">
-                            </div>
-                            <div class="form-group">
-                                <label for="salaryMax">Maximum Salary *</label>
-                                <input type="number" id="salaryMax" name="salaryMax" required
-                                       placeholder="e.g. 120000" min="0" step="1000">
-                            </div>
-                            <div class="form-group">
-                                <label for="currency">Currency *</label>
-                                <select id="currency" name="currency" required>
-                                    <option value="USD">USD</option>
-                                    <option value="EUR">EUR</option>
-                                    <option value="GBP">GBP</option>
-                                    <option value="CAD">CAD</option>
-                                    <option value="INR">INR</option>
-                                    <option value="AUD">AUD</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Resume Upload -->
-                    <div class="section">
-                        <div class="section-header">
-                            <span>📄</span> Resume Upload (Optional)
-                        </div>
-                        
-                        <div class="form-group">
-                            <div class="file-upload" id="resumeUpload">
-                                <div class="upload-icon">📄</div>
-                                <p><strong>Drag & drop your resume here</strong> or click to browse</p>
-                                <small>Supported formats: PDF, DOC, DOCX (max 5MB)</small>
-                                <input type="file" id="resumeFile" name="resumeFile" 
-                                       accept=".pdf,.doc,.docx" style="display: none;">
-                            </div>
-                            <div id="uploadedFileInfo"></div>
-                        </div>
-                    </div>
-
-                    <div id="message" class="message" style="display: none;"></div>
-
-                    <div class="submit-section">
-                        <button type="submit" id="submitBtn" class="btn-submit">
-                            Complete Profile Setup
-                        </button>
-                    </div>
-                </form>
+    <!-- React will render here -->
+    <div id="root">
+        <div class="container">
+            <div class="loading">
+                <h3>🔄 Initializing React Dashboard...</h3>
+                <p>If this message persists, there may be a script loading issue</p>
             </div>
         </div>
     </div>
 
-    <script>
-        console.log('🎯 JobPilot Profile Setup loaded');
-        
-        // ✅ PHASE 2: NEW USER FLAG DETECTION
-        function getURLParameter(name) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(name);
+
+
+    <!-- React Component Script -->
+    <script type="text/babel">
+        // Wait for all dependencies to load
+        function waitForDependencies() {
+            if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                console.log('Waiting for React dependencies...');
+                setTimeout(waitForDependencies, 100);
+                return;
+            }
+            
+            console.log('✅ React dependencies loaded, initializing app...');
+            initializeApp();
         }
 
-        // Capture the new user flag from URL
-        const isNewUser = getURLParameter('is_new_user') === 'true';
-        const userId = getURLParameter('user_id');
+        function initializeApp() {
+            const { useState, useEffect } = React;
 
-        console.log('=== PROFILE SETUP LOADED ===');
-        console.log('Is new user:', isNewUser);
-        console.log('User ID:', userId);
-        console.log('Full URL:', window.location.href);
-        
-        class ProfileSetup {
-            constructor() {
-                this.skills = [];
-                this.uploadedFile = null;
-                this.skillsDatabase = this.initSkillsDatabase();
-                this.filteredSkills = [];
-                this.selectedDropdownIndex = -1;
+            // Configuration - Already set to your instance
+            const API_BASE_URL = 'https://laveychaudhary.app.n8n.cloud';
+
+            function JobDashboard() {
+                const [loading, setLoading] = useState(true);
+                const [error, setError] = useState(null);
+                const [dashboardData, setDashboardData] = useState(null);
+                const [searchTerm, setSearchTerm] = useState('');
+                const [scoreFilter, setScoreFilter] = useState('all');
+                const [filteredMatches, setFilteredMatches] = useState([]);
                 
-                this.init();
-            }
+                // ✅ PHASE 3: NEW USER MATCHING PROGRESS STATE
+                const [showMatchingProgress, setShowMatchingProgress] = useState(false);
+                const [currentStep, setCurrentStep] = useState(1);
+                const [matchingComplete, setMatchingComplete] = useState(false);
 
-            initSkillsDatabase() {
-                return [
-                    // Programming Languages
-                    { name: 'JavaScript', category: 'Programming' },
-                    { name: 'TypeScript', category: 'Programming' },
-                    { name: 'Python', category: 'Programming' },
-                    { name: 'Java', category: 'Programming' },
-                    { name: 'C++', category: 'Programming' },
-                    { name: 'C#', category: 'Programming' },
-                    { name: 'PHP', category: 'Programming' },
-                    { name: 'Ruby', category: 'Programming' },
-                    { name: 'Go', category: 'Programming' },
-                    { name: 'Rust', category: 'Programming' },
-                    { name: 'Swift', category: 'Programming' },
-                    { name: 'Kotlin', category: 'Programming' },
-                    { name: 'Scala', category: 'Programming' },
-                    { name: 'R', category: 'Programming' },
-                    { name: 'MATLAB', category: 'Programming' },
+                // Get user ID from URL parameters
+                const getUserId = () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get('user_id') || 'demo_user';
+                };
 
-                    // Web Development
-                    { name: 'React', category: 'Web Dev' },
-                    { name: 'Vue.js', category: 'Web Dev' },
-                    { name: 'Angular', category: 'Web Dev' },
-                    { name: 'Node.js', category: 'Web Dev' },
-                    { name: 'Express.js', category: 'Web Dev' },
-                    { name: 'Next.js', category: 'Web Dev' },
-                    { name: 'HTML', category: 'Web Dev' },
-                    { name: 'CSS', category: 'Web Dev' },
-                    { name: 'Sass', category: 'Web Dev' },
-                    { name: 'Bootstrap', category: 'Web Dev' },
-                    { name: 'Tailwind CSS', category: 'Web Dev' },
-                    { name: 'jQuery', category: 'Web Dev' },
-                    { name: 'GraphQL', category: 'Web Dev' },
-                    { name: 'REST API', category: 'Web Dev' },
-
-                    // Mobile Development
-                    { name: 'React Native', category: 'Mobile Dev' },
-                    { name: 'Flutter', category: 'Mobile Dev' },
-                    { name: 'iOS Development', category: 'Mobile Dev' },
-                    { name: 'Android Development', category: 'Mobile Dev' },
-                    { name: 'Xamarin', category: 'Mobile Dev' },
-                    { name: 'Ionic', category: 'Mobile Dev' },
-
-                    // Databases
-                    { name: 'MySQL', category: 'Database' },
-                    { name: 'PostgreSQL', category: 'Database' },
-                    { name: 'MongoDB', category: 'Database' },
-                    { name: 'Redis', category: 'Database' },
-                    { name: 'SQLite', category: 'Database' },
-                    { name: 'Oracle', category: 'Database' },
-                    { name: 'Microsoft SQL Server', category: 'Database' },
-                    { name: 'Firebase', category: 'Database' },
-                    { name: 'DynamoDB', category: 'Database' },
-
-                    // Cloud & DevOps
-                    { name: 'AWS', category: 'Cloud' },
-                    { name: 'Azure', category: 'Cloud' },
-                    { name: 'Google Cloud Platform', category: 'Cloud' },
-                    { name: 'Docker', category: 'DevOps' },
-                    { name: 'Kubernetes', category: 'DevOps' },
-                    { name: 'Jenkins', category: 'DevOps' },
-                    { name: 'Git', category: 'DevOps' },
-                    { name: 'GitHub', category: 'DevOps' },
-                    { name: 'GitLab', category: 'DevOps' },
-                    { name: 'Terraform', category: 'DevOps' },
-                    { name: 'Ansible', category: 'DevOps' },
-
-                    // Data Science & AI
-                    { name: 'Machine Learning', category: 'Data Science' },
-                    { name: 'Deep Learning', category: 'Data Science' },
-                    { name: 'Artificial Intelligence', category: 'Data Science' },
-                    { name: 'Data Analysis', category: 'Data Science' },
-                    { name: 'Data Visualization', category: 'Data Science' },
-                    { name: 'TensorFlow', category: 'Data Science' },
-                    { name: 'PyTorch', category: 'Data Science' },
-                    { name: 'Pandas', category: 'Data Science' },
-                    { name: 'NumPy', category: 'Data Science' },
-                    { name: 'Tableau', category: 'Data Science' },
-                    { name: 'Power BI', category: 'Data Science' },
-                    { name: 'SQL', category: 'Data Science' },
-                    { name: 'Statistics', category: 'Data Science' },
-
-                    // Design & UX
-                    { name: 'UI/UX Design', category: 'Design' },
-                    { name: 'Figma', category: 'Design' },
-                    { name: 'Adobe Photoshop', category: 'Design' },
-                    { name: 'Adobe Illustrator', category: 'Design' },
-                    { name: 'Adobe XD', category: 'Design' },
-                    { name: 'Sketch', category: 'Design' },
-                    { name: 'Wireframing', category: 'Design' },
-                    { name: 'Prototyping', category: 'Design' },
-                    { name: 'Graphic Design', category: 'Design' },
-
-                    // Management & Business
-                    { name: 'Project Management', category: 'Management' },
-                    { name: 'Team Leadership', category: 'Management' },
-                    { name: 'Scrum', category: 'Management' },
-                    { name: 'Agile', category: 'Management' },
-                    { name: 'Product Management', category: 'Management' },
-                    { name: 'Business Analysis', category: 'Management' },
-                    { name: 'Strategic Planning', category: 'Management' },
-                    { name: 'Risk Management', category: 'Management' },
-
-                    // Soft Skills
-                    { name: 'Communication', category: 'Soft Skills' },
-                    { name: 'Leadership', category: 'Soft Skills' },
-                    { name: 'Problem Solving', category: 'Soft Skills' },
-                    { name: 'Critical Thinking', category: 'Soft Skills' },
-                    { name: 'Teamwork', category: 'Soft Skills' },
-                    { name: 'Time Management', category: 'Soft Skills' },
-                    { name: 'Adaptability', category: 'Soft Skills' },
-                    { name: 'Creativity', category: 'Soft Skills' },
-                    { name: 'Attention to Detail', category: 'Soft Skills' },
-                    { name: 'Public Speaking', category: 'Soft Skills' },
-
-                    // Tools & Software
-                    { name: 'Jira', category: 'Tools' },
-                    { name: 'Confluence', category: 'Tools' },
-                    { name: 'Slack', category: 'Tools' },
-                    { name: 'Microsoft Office', category: 'Tools' },
-                    { name: 'Google Workspace', category: 'Tools' },
-                    { name: 'Trello', category: 'Tools' },
-                    { name: 'Asana', category: 'Tools' },
-                    { name: 'Salesforce', category: 'Tools' },
-                    { name: 'HubSpot', category: 'Tools' },
-                    { name: 'Notion', category: 'Tools' },
-
-                    // Marketing & Sales
-                    { name: 'Digital Marketing', category: 'Marketing' },
-                    { name: 'SEO', category: 'Marketing' },
-                    { name: 'SEM', category: 'Marketing' },
-                    { name: 'Social Media Marketing', category: 'Marketing' },
-                    { name: 'Content Marketing', category: 'Marketing' },
-                    { name: 'Email Marketing', category: 'Marketing' },
-                    { name: 'Google Analytics', category: 'Marketing' },
-                    { name: 'Facebook Ads', category: 'Marketing' },
-                    { name: 'Google Ads', category: 'Marketing' },
-                    { name: 'Customer Service', category: 'Sales' },
-                    { name: 'Sales Strategy', category: 'Sales' },
-                    { name: 'CRM', category: 'Sales' },
-
-                    // Finance & Accounting
-                    { name: 'Financial Analysis', category: 'Finance' },
-                    { name: 'Accounting', category: 'Finance' },
-                    { name: 'Budgeting', category: 'Finance' },
-                    { name: 'Financial Modeling', category: 'Finance' },
-                    { name: 'QuickBooks', category: 'Finance' },
-                    { name: 'Excel', category: 'Finance' },
-                    { name: 'SAP', category: 'Finance' },
-                    { name: 'Tax Preparation', category: 'Finance' },
-
-                    // Languages
-                    { name: 'English', category: 'Languages' },
-                    { name: 'Spanish', category: 'Languages' },
-                    { name: 'French', category: 'Languages' },
-                    { name: 'German', category: 'Languages' },
-                    { name: 'Mandarin', category: 'Languages' },
-                    { name: 'Japanese', category: 'Languages' },
-                    { name: 'Arabic', category: 'Languages' },
-                    { name: 'Portuguese', category: 'Languages' },
-                    { name: 'Italian', category: 'Languages' },
-                    { name: 'Hindi', category: 'Languages' }
-                ];
-            }
-
-            init() {
-                this.setupEventListeners();
-                this.loadUserData();
-            }
-
-            setupEventListeners() {
-                // Experience level selection
-                document.querySelectorAll('.experience-card').forEach(card => {
-                    card.addEventListener('click', () => this.selectExperience(card));
-                });
-
-                // Skills input
-                const skillInput = document.getElementById('skillInput');
-                skillInput.addEventListener('input', (e) => this.handleSkillSearch(e));
-                skillInput.addEventListener('keydown', (e) => this.handleSkillKeydown(e));
-                skillInput.addEventListener('focus', () => {
-                    if (skillInput.value.trim()) {
-                        this.handleSkillSearch({ target: skillInput });
-                    }
-                });
-                skillInput.addEventListener('blur', (e) => {
-                    // Delay hiding to allow click on dropdown items
-                    setTimeout(() => this.hideDropdown(), 200);
-                });
-
-                // Click outside to close dropdown
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.skills-container')) {
-                        this.hideDropdown();
-                    }
-                });
-
-                // File upload
-                const fileUpload = document.getElementById('resumeUpload');
-                const fileInput = document.getElementById('resumeFile');
-                
-                fileUpload.addEventListener('click', () => fileInput.click());
-                fileInput.addEventListener('change', (e) => this.handleFileUpload(e));
-                
-                // Drag and drop
-                fileUpload.addEventListener('dragover', (e) => {
-                    e.preventDefault();
-                    fileUpload.classList.add('dragover');
-                });
-                
-                fileUpload.addEventListener('dragleave', () => {
-                    fileUpload.classList.remove('dragover');
-                });
-                
-                fileUpload.addEventListener('drop', (e) => {
-                    e.preventDefault();
-                    fileUpload.classList.remove('dragover');
-                    const files = e.dataTransfer.files;
-                    if (files.length > 0) {
-                        this.processFile(files[0]);
-                    }
-                });
-
-                // Form submission
-                document.getElementById('profileForm').addEventListener('submit', (e) => this.handleSubmit(e));
-            }
-
-            loadUserData() {
-                if (!userId) {
-                    this.showMessage('User ID not found. Please register again.', 'error');
-                    setTimeout(() => {
-                        window.location.href = '/';
-                    }, 3000);
-                    return;
-                }
-                
-                console.log('👤 User ID:', userId);
-                
-                // ✅ CHECK IF USER ALREADY HAS COMPLETED PROFILE
-                this.checkExistingProfile(userId);
-            }
-
-            async checkExistingProfile(userId) {
-                try {
-                    console.log('🔍 Checking if user profile already exists...');
+                // ✅ PHASE 3: CHECK FOR NEW USER COMPLETION
+                const checkForNewUserCompletion = () => {
+                    const justCompleted = sessionStorage.getItem('justCompletedProfile');
+                    const completionUserId = sessionStorage.getItem('completionUserId');
+                    const currentUserId = getUserId();
                     
-                    // Show loading state
-                    document.getElementById('profileCheckLoading').style.display = 'block';
-                    document.getElementById('profileFormContainer').style.display = 'none';
+                    console.log('=== DASHBOARD NEW USER CHECK ===');
+                    console.log('Just completed:', justCompleted);
+                    console.log('Completion user ID:', completionUserId);
+                    console.log('Current user ID:', currentUserId);
                     
-                    const response = await fetch(`https://laveychaudhary.app.n8n.cloud/webhook/check-profile-status?user_id=${userId}`, {
-                        method: 'GET',
-                        headers: {
-                            'Accept': 'application/json'
-                        }
-                    });
-                    
-                    console.log('📡 Profile check response:', response.status);
-                    
-                    if (response.ok) {
-                        const result = await response.json();
-                        console.log('📋 Profile status result:', result);
+                    if (justCompleted === 'true' && completionUserId === currentUserId) {
+                        // Clean up session storage
+                        sessionStorage.removeItem('justCompletedProfile');
+                        sessionStorage.removeItem('completionUserId');
                         
-                        // Hide loading state
-                        document.getElementById('profileCheckLoading').style.display = 'none';
-                        
-                        // If user already has completed profile (checkmark = true)
-                        if (result.profile_completed === true) {
-                            document.getElementById('profileFormContainer').innerHTML = `
-                                <div style="text-align: center; padding: 60px 20px;">
-                                    <div style="font-size: 60px; margin-bottom: 20px;">👋</div>
-                                    <h2 style="color: #1f2937; margin-bottom: 16px; font-size: 28px;">Welcome back, ${result.user_name || 'User'}!</h2>
-                                    <p style="color: #6b7280; margin-bottom: 30px; font-size: 16px;">You already have a completed profile. Taking you to your job dashboard...</p>
-                                    <div style="background: #e0f2fe; border: 1px solid #0284c7; padding: 15px; border-radius: 8px; margin: 20px 0; color: #0369a1; font-size: 14px;">
-                                        <strong>Auto-redirect:</strong> You'll be automatically taken to your dashboard in <span id="countdown">5</span> seconds.
-                                    </div>
-                                    <a href="https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${userId}" 
-                                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 32px; border: none; border-radius: 12px; font-size: 16px; font-weight: 600; text-decoration: none; display: inline-block; transition: transform 0.3s ease;">
-                                        🎯 Go to Dashboard Now
-                                    </a>
-                                </div>
-                            `;
-                            
-                            // Countdown and redirect
-                            let countdown = 5;
-                            const countdownElement = document.getElementById('countdown');
-                            
-                            const timer = setInterval(() => {
-                                countdown--;
-                                if (countdownElement) {
-                                    countdownElement.textContent = countdown;
-                                }
-                                
-                                if (countdown <= 0) {
-                                    clearInterval(timer);
-                                    window.location.href = `https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${userId}`;
-                                }
-                            }, 1000);
-                            
-                            return;
-                        } else {
-                            // Profile not completed - show form
-                            console.log('👤 Profile incomplete or new user - showing profile setup form');
-                            this.showMessage('Please complete your profile to start receiving job matches.', 'info');
-                            document.getElementById('profileFormContainer').style.display = 'block';
-                            document.getElementById('profileForm').dataset.userId = userId;
-                        }
-                    } else {
-                        // If check fails, assume new user and continue
-                        console.log('⚠️ Profile check failed, treating as new user');
-                        document.getElementById('profileCheckLoading').style.display = 'none';
-                        document.getElementById('profileFormContainer').style.display = 'block';
-                        document.getElementById('profileForm').dataset.userId = userId;
+                        console.log('✅ New user detected from profile completion');
+                        return true;
                     }
-                    
-                } catch (error) {
-                    console.error('❌ Error checking user profile status:', error);
-                    // Continue with form setup as fallback
-                    document.getElementById('profileCheckLoading').style.display = 'none';
-                    document.getElementById('profileFormContainer').style.display = 'block';
-                    this.showMessage('Unable to verify profile status. Please continue with setup.', 'info');
-                    document.getElementById('profileForm').dataset.userId = userId;
-                }
-            }
-
-            selectExperience(selectedCard) {
-                // Remove selection from all cards
-                document.querySelectorAll('.experience-card').forEach(card => {
-                    card.classList.remove('selected');
-                });
-
-                // Add selection to clicked card
-                selectedCard.classList.add('selected');
-                document.getElementById('experienceLevel').value = selectedCard.dataset.experience;
-            }
-
-            handleSkillSearch(event) {
-                const query = event.target.value.toLowerCase().trim();
-                
-                if (query.length === 0) {
-                    this.hideDropdown();
-                    return;
-                }
-                
-                // Filter skills based on search query
-                this.filteredSkills = this.skillsDatabase.filter(skill => 
-                    skill.name.toLowerCase().includes(query) && 
-                    !this.skills.includes(skill.name)
-                ).slice(0, 8); // Show max 8 results
-                
-                this.renderDropdown();
-                this.selectedDropdownIndex = -1;
-            }
-
-            handleSkillKeydown(event) {
-                const dropdown = document.getElementById('skillsDropdown');
-                
-                if (!dropdown.classList.contains('show') || this.filteredSkills.length === 0) {
-                    if (event.key === 'Enter') {
-                        event.preventDefault();
-                        const skillName = event.target.value.trim();
-                        if (skillName) {
-                            this.addSkill(skillName);
-                            event.target.value = '';
-                            this.hideDropdown();
-                        }
-                    }
-                    return;
-                }
-                
-                switch (event.key) {
-                    case 'ArrowDown':
-                        event.preventDefault();
-                        this.selectedDropdownIndex = Math.min(
-                            this.selectedDropdownIndex + 1, 
-                            this.filteredSkills.length - 1
-                        );
-                        this.updateDropdownHighlight();
-                        break;
-                        
-                    case 'ArrowUp':
-                        event.preventDefault();
-                        this.selectedDropdownIndex = Math.max(this.selectedDropdownIndex - 1, -1);
-                        this.updateDropdownHighlight();
-                        break;
-                        
-                    case 'Enter':
-                        event.preventDefault();
-                        if (this.selectedDropdownIndex >= 0 && this.selectedDropdownIndex < this.filteredSkills.length) {
-                            this.addSkill(this.filteredSkills[this.selectedDropdownIndex].name);
-                        } else {
-                            // Add custom skill if no dropdown selection
-                            const skillName = event.target.value.trim();
-                            if (skillName) {
-                                this.addSkill(skillName);
-                            }
-                        }
-                        event.target.value = '';
-                        this.hideDropdown();
-                        break;
-                        
-                    case 'Escape':
-                        this.hideDropdown();
-                        event.target.blur();
-                        break;
-                }
-            }
-
-            renderDropdown() {
-                const dropdown = document.getElementById('skillsDropdown');
-                
-                if (this.filteredSkills.length === 0) {
-                    dropdown.innerHTML = '<div class="dropdown-item" style="color: #9ca3af; cursor: default;">No matching skills found</div>';
-                } else {
-                    dropdown.innerHTML = this.filteredSkills.map((skill, index) => `
-                        <div class="dropdown-item" data-skill="${skill.name}" data-index="${index}">
-                            <span>${skill.name}</span>
-                            <span class="skill-category-tag">${skill.category}</span>
-                        </div>
-                    `).join('');
-                    
-                    // Add click handlers to dropdown items
-                    dropdown.querySelectorAll('.dropdown-item[data-skill]').forEach(item => {
-                        item.addEventListener('mousedown', (e) => {
-                            e.preventDefault(); // Prevent blur event
-                        });
-                        
-                        item.addEventListener('click', () => {
-                            this.addSkill(item.dataset.skill);
-                            document.getElementById('skillInput').value = '';
-                            this.hideDropdown();
-                            document.getElementById('skillInput').focus();
-                        });
-                        
-                        item.addEventListener('mouseenter', () => {
-                            this.selectedDropdownIndex = parseInt(item.dataset.index);
-                            this.updateDropdownHighlight();
-                        });
-                    });
-                }
-                
-                this.showDropdown();
-            }
-
-            updateDropdownHighlight() {
-                const items = document.querySelectorAll('#skillsDropdown .dropdown-item[data-skill]');
-                items.forEach((item, index) => {
-                    item.classList.toggle('highlighted', index === this.selectedDropdownIndex);
-                });
-            }
-
-            showDropdown() {
-                const dropdown = document.getElementById('skillsDropdown');
-                dropdown.classList.add('show');
-            }
-
-            hideDropdown() {
-                const dropdown = document.getElementById('skillsDropdown');
-                dropdown.classList.remove('show');
-                this.selectedDropdownIndex = -1;
-            }
-
-            addSkill(skillName) {
-                if (!skillName || skillName.length < 2) {
-                    return;
-                }
-
-                // Check if skill already exists (case insensitive)
-                if (this.skills.some(skill => skill.toLowerCase() === skillName.toLowerCase())) {
-                    this.showMessage('Skill already added', 'info');
-                    return;
-                }
-
-                // Add skill to array
-                this.skills.push(skillName);
-                
-                // Create skill tag element
-                const skillTag = document.createElement('div');
-                skillTag.className = 'skill-tag';
-                skillTag.innerHTML = `
-                    <span>${skillName}</span>
-                    <button type="button" class="remove-skill" data-skill="${skillName}">×</button>
-                `;
-
-                // Add remove functionality
-                skillTag.querySelector('.remove-skill').addEventListener('click', () => {
-                    this.removeSkill(skillName);
-                    skillTag.remove();
-                });
-
-                // Add to skills container
-                document.getElementById('skillsTags').appendChild(skillTag);
-                
-                // Hide placeholder if skills exist
-                const placeholder = document.getElementById('skillsPlaceholder');
-                if (this.skills.length > 0) {
-                    placeholder.classList.add('hidden');
-                }
-                
-                // Update hidden input
-                document.getElementById('skills').value = JSON.stringify(this.skills);
-                
-                console.log('✅ Skill added:', skillName);
-            }
-
-            removeSkill(skillName) {
-                this.skills = this.skills.filter(skill => skill !== skillName);
-                
-                // Show placeholder if no skills left
-                const placeholder = document.getElementById('skillsPlaceholder');
-                if (this.skills.length === 0) {
-                    placeholder.classList.remove('hidden');
-                }
-                
-                document.getElementById('skills').value = JSON.stringify(this.skills);
-                console.log('❌ Skill removed:', skillName);
-            }
-
-            handleFileUpload(event) {
-                const file = event.target.files[0];
-                if (file) {
-                    this.processFile(file);
-                }
-            }
-
-            processFile(file) {
-                // Validate file type
-                const allowedTypes = ['application/pdf', 'application/msword', 
-                                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-                if (!allowedTypes.includes(file.type)) {
-                    this.showMessage('Please upload a PDF, DOC, or DOCX file', 'error');
-                    return;
-                }
-
-                // Validate file size (5MB max)
-                if (file.size > 5 * 1024 * 1024) {
-                    this.showMessage('File size must be less than 5MB', 'error');
-                    return;
-                }
-
-                this.uploadedFile = file;
-                this.displayUploadedFile(file);
-            }
-
-            displayUploadedFile(file) {
-                const fileInfo = document.getElementById('uploadedFileInfo');
-                const fileSize = (file.size / 1024 / 1024).toFixed(2);
-                
-                fileInfo.innerHTML = `
-                    <div class="uploaded-file">
-                        <div class="file-icon">📄</div>
-                        <div class="file-info">
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${fileSize} MB</div>
-                        </div>
-                        <button type="button" onclick="this.parentElement.remove(); document.getElementById('resumeFile').value = ''; profileSetup.uploadedFile = null;" 
-                                style="background: none; border: none; color: #ef4444; font-size: 18px; cursor: pointer;">×</button>
-                    </div>
-                `;
-            }
-
-            validateForm() {
-                const requiredFields = [
-                    { id: 'professionalTitle', message: 'Professional title is required' },
-                    { id: 'location', message: 'Location is required' },
-                    { id: 'experienceLevel', message: 'Please select your experience level' },
-                    { id: 'yearsExperience', message: 'Years of experience is required' },
-                    { id: 'salaryMin', message: 'Minimum salary is required' },
-                    { id: 'salaryMax', message: 'Maximum salary is required' },
-                    { id: 'currency', message: 'Currency is required' }
-                ];
-
-                for (const field of requiredFields) {
-                    const element = document.getElementById(field.id);
-                    if (!element.value.trim()) {
-                        this.showMessage(field.message, 'error');
-                        element.focus();
-                        return false;
-                    }
-                }
-
-                if (this.skills.length < 3) {
-                    this.showMessage('Please add at least 3 skills', 'error');
-                    document.getElementById('skillInput').focus();
                     return false;
-                }
+                };
 
-                const minSalary = parseInt(document.getElementById('salaryMin').value);
-                const maxSalary = parseInt(document.getElementById('salaryMax').value);
-                
-                if (maxSalary <= minSalary) {
-                    this.showMessage('Maximum salary must be greater than minimum salary', 'error');
-                    document.getElementById('salaryMax').focus();
-                    return false;
-                }
-
-                return true;
-            }
-
-            async handleSubmit(event) {
-                event.preventDefault();
-                
-                if (!this.validateForm()) {
-                    return;
-                }
-
-                const submitBtn = document.getElementById('submitBtn');
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<span style="display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s linear infinite; margin-right: 8px;"></span>Completing Profile...';
-
-                try {
-                    // Create FormData for file upload support
-                    const formData = new FormData();
-                    
-                    // Add all form fields
-                    formData.append('user_id', document.getElementById('profileForm').dataset.userId);
-                    formData.append('professionalTitle', document.getElementById('professionalTitle').value.trim());
-                    formData.append('location', document.getElementById('location').value.trim());
-                    formData.append('experienceLevel', document.getElementById('experienceLevel').value);
-                    formData.append('yearsExperience', document.getElementById('yearsExperience').value);
-                    formData.append('salaryMin', document.getElementById('salaryMin').value);
-                    formData.append('salaryMax', document.getElementById('salaryMax').value);
-                    formData.append('currency', document.getElementById('currency').value);
-                    
-                    // Add skills as JSON string
-                    formData.append('skills', JSON.stringify(this.skills));
-                    
-                    // Add metadata
-                    formData.append('timestamp', new Date().toISOString());
-                    formData.append('profileComplete', 'true');
-                    
-                    // Add resume file if uploaded
-                    if (this.uploadedFile) {
-                        formData.append('resumeFile', this.uploadedFile);
-                        formData.append('hasResume', 'true');
-                        formData.append('resumeFileName', this.uploadedFile.name);
-                        console.log('✅ Resume file added to FormData');
-                    } else {
-                        formData.append('hasResume', 'false');
-                        console.log('❌ No resume file to upload');
-                    }
-
-                    console.log('📤 Submitting profile data with FormData');
-
-                    const response = await fetch('https://laveychaudhary.app.n8n.cloud/webhook/profile-setup', {
-                        method: 'POST',
-                        body: formData 
-                    });
-
-                    console.log('📡 Response status:', response.status);
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        console.log('✅ Profile setup successful:', result);
+                // ✅ PHASE 3: TRIGGER IMMEDIATE MATCHING
+                const triggerImmediateMatching = async (userId) => {
+                    try {
+                        console.log('🚀 Triggering immediate matching for user:', userId);
+                        const response = await fetch(`${API_BASE_URL}/webhook/immediate-job-matching`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: userId,
+                                trigger_source: 'new_user_dashboard',
+                                immediate: true
+                            })
+                        });
                         
-                        // ✅ PHASE 2: STORE NEW USER FLAG IN SESSION STORAGE
-                        if (isNewUser) {
-                            console.log('🔄 Storing new user completion flag for dashboard');
-                            sessionStorage.setItem('justCompletedProfile', 'true');
-                            sessionStorage.setItem('completionUserId', result.user_id || userId);
+                        if (response.ok) {
+                            console.log('✅ Immediate matching triggered successfully');
+                        } else {
+                            console.warn('⚠️ Immediate matching request failed:', response.status);
                         }
-                        
-                        this.showMessage('🎉 Profile completed successfully! Redirecting to your dashboard...', 'success');
-                        
+                    } catch (error) {
+                        console.error('❌ Failed to trigger immediate matching:', error);
+                    }
+                };
+
+                // ✅ PHASE 3: ANIMATE PROGRESS STEPS
+                const animateProgressSteps = () => {
+                    const steps = [
+                        { step: 1, delay: 0 },
+                        { step: 2, delay: 3000 },
+                        { step: 3, delay: 6000 },
+                        { step: 4, delay: 9000 }
+                    ];
+                    
+                    steps.forEach(({ step, delay }) => {
                         setTimeout(() => {
-                            window.location.href = result.redirect_url || `https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${document.getElementById('profileForm').dataset.userId}`;
-                        }, 2000);
+                            setCurrentStep(step);
+                        }, delay);
+                    });
+                };
+
+                // ✅ PHASE 3: POLL FOR MATCHES
+                const pollForMatches = (userId) => {
+                    let pollCount = 0;
+                    const maxPolls = 24; // 2 minutes max (5s intervals)
+                    
+                    console.log('🔄 Starting to poll for matches...');
+                    
+                    const pollInterval = setInterval(async () => {
+                        pollCount++;
                         
-                    } else {
-                        const errorText = await response.text();
-                        console.error('❌ Server response:', errorText);
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        try {
+                            console.log(`🔍 Polling attempt ${pollCount}/${maxPolls}`);
+                            const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log('📊 Poll result:', { matchCount: data.matches?.length || 0 });
+                                
+                                if (data.matches && data.matches.length > 0) {
+                                    clearInterval(pollInterval);
+                                    console.log('🎉 Matches found! Showing completion animation...');
+                                    
+                                    // Show completion animation
+                                    setMatchingComplete(true);
+                                    
+                                    setTimeout(() => {
+                                        setShowMatchingProgress(false);
+                                        setDashboardData(data);
+                                        setFilteredMatches(data.matches || []);
+                                        setLoading(false);
+                                    }, 3000);
+                                    
+                                    return;
+                                }
+                            }
+                            
+                            if (pollCount >= maxPolls) {
+                                clearInterval(pollInterval);
+                                console.log('⏱️ Polling timeout reached');
+                                setShowMatchingProgress(false);
+                                setLoading(false);
+                                setError('Matching is taking longer than expected. Please refresh the page in a few minutes.');
+                            }
+                        } catch (error) {
+                            console.error('❌ Polling error:', error);
+                        }
+                    }, 5000); // Poll every 5 seconds
+                };
+
+                // ✅ PHASE 3: SHOW MATCHING PROGRESS
+                const showMatchingProgressUI = async (userId) => {
+                    setShowMatchingProgress(true);
+                    setLoading(false);
+                    
+                    // Trigger immediate matching
+                    await triggerImmediateMatching(userId);
+                    
+                    // Start progress animation
+                    animateProgressSteps();
+                    
+                    // Start polling for matches
+                    pollForMatches(userId);
+                };
+
+                // Load dashboard data (for existing users)
+                const loadDashboard = async () => {
+                    const userId = getUserId();
+                    setLoading(true);
+                    setError(null);
+
+                    try {
+                        console.log(`🔄 Loading dashboard for user: ${userId}`);
+                        const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        
+                        const data = await response.json();
+                        console.log('✅ Dashboard data loaded:', data);
+                        setDashboardData(data);
+                        setFilteredMatches(data.matches || []);
+                        
+                    } catch (error) {
+                        console.error('❌ Error loading dashboard:', error);
+                        setError('Unable to load job matches. Please try refreshing the page.');
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+
+                // Filter matches based on search and score filter
+                useEffect(() => {
+                    if (!dashboardData?.matches) return;
+
+                    let filtered = dashboardData.matches;
+
+                    // Apply search filter
+                    if (searchTerm) {
+                        filtered = filtered.filter(match =>
+                            match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_description?.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
                     }
 
-                } catch (error) {
-                    console.error('❌ Profile setup failed:', error);
-                    this.showMessage('Failed to complete profile. Please try again.', 'error');
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = 'Complete Profile Setup';
+                    // Apply score filter
+                    if (scoreFilter !== 'all') {
+                        if (scoreFilter === 'excellent') {
+                            filtered = filtered.filter(match => match.match_score >= 80);
+                        } else if (scoreFilter === 'good') {
+                            filtered = filtered.filter(match => match.match_score >= 70 && match.match_score < 80);
+                        } else if (scoreFilter === 'fair') {
+                            filtered = filtered.filter(match => match.match_score < 70);
+                        }
+                    }
+
+                    setFilteredMatches(filtered);
+                }, [dashboardData, searchTerm, scoreFilter]);
+
+                // ✅ PHASE 3: MAIN DASHBOARD LOAD LOGIC
+                useEffect(() => {
+                    const userId = getUserId();
+                    
+                    // Check if this is a new user who just completed profile
+                    if (checkForNewUserCompletion()) {
+                        // New user - show matching progress
+                        showMatchingProgressUI(userId);
+                    } else {
+                        // Existing user - load dashboard normally
+                        loadDashboard();
+                    }
+                }, []);
+
+                const getScoreClass = (score) => {
+                    if (score >= 80) return 'excellent';
+                    if (score >= 70) return 'good';
+                    return 'fair';
+                };
+
+                const getScoreLabel = (score) => {
+                    if (score >= 80) return 'Excellent';
+                    if (score >= 70) return 'Good';
+                    return 'Fair';
+                };
+
+                // ✅ PHASE 3: MATCHING PROGRESS COMPONENT
+                if (showMatchingProgress) {
+                    if (matchingComplete) {
+                        return (
+                            <div className="container">
+                                <div className="matching-progress">
+                                    <div className="success-animation">
+                                        <div className="checkmark">✓</div>
+                                        <h3>🎉 Found {dashboardData?.matches?.length || 'Several'} Perfect Matches!</h3>
+                                        <p>Loading your personalized job opportunities...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div className="container">
+                            <div className="header">
+                                <h1>🎯 Welcome to Your Job Dashboard</h1>
+                                <p>We're setting up your personalized experience</p>
+                            </div>
+
+                            <div className="matching-progress">
+                                <div className="spinner"></div>
+                                <h3>🎯 Finding Your Perfect Matches...</h3>
+                                <p>We're analyzing thousands of job opportunities based on your profile</p>
+                                
+                                <div className="progress-steps">
+                                    <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
+                                        <span className="step-icon">📋</span>
+                                        <span>Analyzing your profile</span>
+                                    </div>
+                                    <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
+                                        <span className="step-icon">🔍</span>
+                                        <span>Searching job database</span>
+                                    </div>
+                                    <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
+                                        <span className="step-icon">🤖</span>
+                                        <span>AI matching in progress</span>
+                                    </div>
+                                    <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
+                                        <span className="step-icon">✨</span>
+                                        <span>Finalizing your matches</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
                 }
+
+                if (loading) {
+                    return (
+                        <div className="container">
+                            <div className="loading">
+                                <h3>🔄 Loading your job matches...</h3>
+                                <p>Please wait while we fetch your personalized recommendations</p>
+                            </div>
+                        </div>
+                    );
+                }
+
+                if (error) {
+                    return (
+                        <div className="container">
+                            <div className="error">
+                                <h3>⚠️ Unable to load matches</h3>
+                                <p>{error}</p>
+                                <button className="refresh-btn" onClick={loadDashboard} style={{marginTop: '16px'}}>
+                                    🔄 Try Again
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="container">
+                        {/* Header */}
+                        <div className="header">
+                            <h1>🎯 Your Job Dashboard</h1>
+                            <p>AI-powered job matches tailored for your skills and experience</p>
+                        </div>
+
+                        {/* Stats */}
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.total_matches || (dashboardData?.matches?.length || 0)}</div>
+                                <div className="stat-label">Total Matches</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || (dashboardData?.matches?.filter(m => m.match_score >= 80).length || 0)}</div>
+                                <div className="stat-label">Excellent (80%+)</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.good_matches || (dashboardData?.matches?.filter(m => m.match_score >= 70 && m.match_score < 80).length || 0)}</div>
+                                <div className="stat-label">Good (70%+)</div>
+                            </div>
+                        </div>
+
+                        {/* Controls */}
+                        <div className="controls">
+                            <div className="controls-header">
+                                <div>
+                                    <h2 style={{margin: '0 0 4px 0', color: '#1f2937'}}>Your Job Matches</h2>
+                                    <p style={{margin: 0, color: '#6b7280'}}>
+                                        Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || (dashboardData?.matches?.length || 0)} matches
+                                    </p>
+                                </div>
+                                <button className="refresh-btn" onClick={loadDashboard}>
+                                    🔄 Refresh
+                                </button>
+                            </div>
+
+                            <div className="search-filter">
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder="🔍 Search jobs, companies, locations, or descriptions..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <select
+                                    className="filter-select"
+                                    value={scoreFilter}
+                                    onChange={(e) => setScoreFilter(e.target.value)}
+                                >
+                                    <option value="all">All Matches</option>
+                                    <option value="excellent">Excellent (80%+)</option>
+                                    <option value="good">Good (70-79%)</option>
+                                    <option value="fair">Fair (&lt;70%)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {/* Job Matches */}
+                        <div className="matches-container">
+                            {filteredMatches.length === 0 ? (
+                                <div className="empty-state">
+                                    <h3>No matches found</h3>
+                                    <p>Try adjusting your search or filter criteria</p>
+                                    <button className="refresh-btn" onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}>
+                                        ✨ Show All Matches
+                                    </button>
+                                </div>
+                            ) : (
+                                filteredMatches.map((match, index) => (
+                                    <div key={match.id || index} className={`match-card ${getScoreClass(match.match_score)}`}>
+                                        <div className="match-header">
+                                            <div className="job-info">
+                                                <h3>{match.job_title || 'Job Title Not Available'}</h3>
+                                                <div className="job-meta">
+                                                    <span><strong>{match.job_company || match.company || 'Company'}</strong></span>
+                                                    <span>•</span>
+                                                    <span>📍 {match.job_location || match.location || 'Location'}</span>
+                                                </div>
+                                            </div>
+                                            <div className="score-container">
+                                                <div className={`score-badge ${getScoreClass(match.match_score)}`}>
+                                                    {match.match_score}%
+                                                </div>
+                                                <div className="score-label">{getScoreLabel(match.match_score)}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-details">
+                                            {/* ✅ JOB DESCRIPTION SECTION */}
+                                            {match.job_description && (
+                                                <div className="job-description">
+                                                    <h4 style={{
+                                                        fontSize: '16px',
+                                                        fontWeight: '600',
+                                                        marginBottom: '8px',
+                                                        color: '#374151',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '8px'
+                                                    }}>
+                                                        📝 Job Description
+                                                    </h4>
+                                                    <div className="job-description-content" style={{
+                                                        fontSize: '14px',
+                                                        lineHeight: '1.6',
+                                                        color: '#6b7280',
+                                                        maxHeight: '120px',
+                                                        overflowY: 'auto'
+                                                    }}>
+                                                        {match.job_description.length > 300 
+                                                            ? `${match.job_description.substring(0, 300)}...` 
+                                                            : match.job_description
+                                                        }
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="reasoning">
+                                                <strong>🤖 AI Analysis:</strong> {match.ai_reasoning || match.reasoning || 'Analysis not available'}
+                                            </div>
+
+                                            <div className="skills-section">
+                                                <div className="skills-group skills-have">
+                                                    <h4>✅ You Have</h4>
+                                                    <div className="skills-list">
+                                                        {match.matching_skills || 'No skills listed'}
+                                                    </div>
+                                                </div>
+                                                <div className="skills-group skills-need">
+                                                    <h4>📚 To Learn</h4>
+                                                    <div className="skills-list">
+                                                        {match.missing_skills || 'None required'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-actions">
+                                            <a 
+                                                href={match.job_url || match.apply_url || '#'} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="apply-btn"
+                                            >
+                                                🚀 Apply Now
+                                            </a>
+                                            <div className="job-meta-info">
+                                                <span>📅 {match.created_date || 'Recently'}</span>
+                                                <span>💼 {match.job_type || 'Full-time'}</span>
+                                                <span>💰 {match.job_salary || match.salary_info || 'Salary not specified'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        <div style={{textAlign: 'center', marginTop: '40px', color: 'rgba(255,255,255,0.7)'}}>
+                            <p>Dashboard updates daily with new job matches</p>
+                            <p><a href="mailto:support@jobmatcher.com" style={{color: 'rgba(255,255,255,0.9)'}}>Need help?</a></p>
+                        </div>
+                    </div>
+                );
             }
 
-            showMessage(text, type) {
-                const messageDiv = document.getElementById('message');
-                messageDiv.textContent = text;
-                messageDiv.className = `message ${type}`;
-                messageDiv.style.display = 'block';
-                
-                // Auto hide after 5 seconds for non-error messages
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        messageDiv.style.display = 'none';
-                    }, 5000);
-                }
-                
-                console.log(`💬 ${type.toUpperCase()}: ${text}`);
-            }
+            // Render the dashboard
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(JobDashboard));
+            
+            console.log('✅ React app initialized successfully!');
         }
 
-        // Initialize when page loads
-        const profileSetup = new ProfileSetup();
+        // Start the initialization process
+        waitForDependencies();
     </script>
 </body>
 </html>
