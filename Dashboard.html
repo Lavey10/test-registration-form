@@ -57,6 +57,45 @@
             opacity: 0.9;
         }
 
+        .header-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-btn.secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .header-btn.secondary:hover {
+            background: #d1d5db;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
         .matching-progress {
             text-align: center;
             padding: 60px 20px;
@@ -215,6 +254,30 @@
             gap: 16px;
         }
 
+        .controls-title {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .controls-title h2 {
+            margin: 0 0 4px 0;
+            color: #1f2937;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .controls-title p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .controls-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
         .search-filter {
             display: flex;
             gap: 16px;
@@ -261,11 +324,36 @@
             font-weight: 600;
             font-size: 16px;
             transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .refresh-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
 
         .loading {
@@ -530,6 +618,43 @@
             font-size: 18px;
         }
 
+        .notification-bar {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .notification-bar.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .notification-bar.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .notification-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 16px;
@@ -543,6 +668,16 @@
                 font-size: 28px;
             }
 
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .header-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
             .match-header {
                 flex-direction: column;
                 align-items: stretch;
@@ -551,6 +686,17 @@
             .controls-header {
                 flex-direction: column;
                 align-items: stretch;
+            }
+
+            .controls-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .edit-btn,
+            .refresh-btn {
+                width: 100%;
+                justify-content: center;
             }
 
             .search-filter {
@@ -582,6 +728,22 @@
             .step {
                 font-size: 14px;
                 padding: 12px 16px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .notification-bar {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .notification-close {
+                margin-left: 0;
+                align-self: flex-end;
             }
         }
     </style>
@@ -620,10 +782,24 @@
                 const [currentStep, setCurrentStep] = useState(1);
                 const [matchingComplete, setMatchingComplete] = useState(false);
                 const [expandedDescriptions, setExpandedDescriptions] = useState({});
+                const [showUpdateNotification, setShowUpdateNotification] = useState(false);
 
                 const getUserId = () => {
                     const urlParams = new URLSearchParams(window.location.search);
                     return urlParams.get('user_id') || 'demo_user';
+                };
+
+                const checkForProfileUpdate = () => {
+                    const profileUpdated = sessionStorage.getItem('profileUpdated');
+                    const updateUserId = sessionStorage.getItem('updateUserId');
+                    const currentUserId = getUserId();
+                    
+                    if (profileUpdated === 'true' && updateUserId === currentUserId) {
+                        sessionStorage.removeItem('profileUpdated');
+                        sessionStorage.removeItem('updateUserId');
+                        return true;
+                    }
+                    return false;
                 };
 
                 const checkForNewUserCompletion = () => {
@@ -646,7 +822,7 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 user_id: userId,
-                                trigger_source: 'new_user_dashboard',
+                                trigger_source: 'dashboard_refresh',
                                 immediate: true
                             })
                         });
@@ -670,9 +846,9 @@
                     });
                 };
 
-                const pollForMatches = (userId) => {
+                const pollForMatches = (userId, isRefresh = false) => {
                     let pollCount = 0;
-                    const maxPolls = 24;
+                    const maxPolls = isRefresh ? 12 : 24; // Shorter polling for refresh
                     
                     const pollInterval = setInterval(async () => {
                         pollCount++;
@@ -685,14 +861,25 @@
                                 
                                 if (data.matches && data.matches.length > 0) {
                                     clearInterval(pollInterval);
-                                    setMatchingComplete(true);
                                     
-                                    setTimeout(() => {
+                                    if (isRefresh) {
+                                        // For refresh, just update data without animation
                                         setShowMatchingProgress(false);
                                         setDashboardData(data);
                                         setFilteredMatches(data.matches || []);
                                         setLoading(false);
-                                    }, 3000);
+                                        setShowUpdateNotification(true);
+                                    } else {
+                                        // For new user, show completion animation
+                                        setMatchingComplete(true);
+                                        
+                                        setTimeout(() => {
+                                            setShowMatchingProgress(false);
+                                            setDashboardData(data);
+                                            setFilteredMatches(data.matches || []);
+                                            setLoading(false);
+                                        }, 3000);
+                                    }
                                     
                                     return;
                                 }
@@ -710,15 +897,19 @@
                     }, 5000);
                 };
 
-                const showMatchingProgressUI = async (userId) => {
+                const showMatchingProgressUI = async (userId, isRefresh = false) => {
                     setShowMatchingProgress(true);
                     setLoading(false);
                     await triggerImmediateMatching(userId);
-                    animateProgressSteps();
-                    pollForMatches(userId);
+                    
+                    if (!isRefresh) {
+                        animateProgressSteps();
+                    }
+                    
+                    pollForMatches(userId, isRefresh);
                 };
 
-                const loadDashboard = async () => {
+                const loadDashboard = async (skipMatching = false) => {
                     const userId = getUserId();
                     setLoading(true);
                     setError(null);
@@ -731,15 +922,30 @@
                         }
                         
                         const data = await response.json();
-                        setDashboardData(data);
-                        setFilteredMatches(data.matches || []);
+                        
+                        if (data.matches && data.matches.length > 0) {
+                            setDashboardData(data);
+                            setFilteredMatches(data.matches || []);
+                            setLoading(false);
+                        } else if (!skipMatching) {
+                            // No matches found, trigger matching
+                            showMatchingProgressUI(userId, true);
+                        } else {
+                            setDashboardData(data);
+                            setFilteredMatches([]);
+                            setLoading(false);
+                        }
                         
                     } catch (error) {
                         console.error('Error loading dashboard:', error);
                         setError('Unable to load job matches. Please try refreshing the page.');
-                    } finally {
                         setLoading(false);
                     }
+                };
+
+                const handleRefresh = () => {
+                    const userId = getUserId();
+                    showMatchingProgressUI(userId, true);
                 };
 
                 useEffect(() => {
@@ -747,12 +953,10 @@
 
                     let filtered = dashboardData.matches;
 
-                    // 🔍 DEBUG: Log filtering process
                     console.log('=== FILTERING DEBUG ===');
                     console.log('Total matches:', dashboardData.matches.length);
                     console.log('Current filter:', scoreFilter);
                     
-                    // Check first few scores
                     dashboardData.matches.slice(0, 5).forEach((match, index) => {
                         console.log(`Match ${index + 1}:`, {
                             title: match.job_title,
@@ -808,7 +1012,10 @@
                 useEffect(() => {
                     const userId = getUserId();
                     
-                    if (checkForNewUserCompletion()) {
+                    if (checkForProfileUpdate()) {
+                        setShowUpdateNotification(true);
+                        showMatchingProgressUI(userId, true);
+                    } else if (checkForNewUserCompletion()) {
                         showMatchingProgressUI(userId);
                     } else {
                         loadDashboard();
@@ -838,7 +1045,6 @@
                     if (!skills || skills === '""' || skills === '"' || skills.trim() === '') {
                         return '';
                     }
-                    // Remove quotes if they exist
                     return skills.replace(/^"(.*)"$/, '$1') || '';
                 };
 
@@ -909,7 +1115,7 @@
                             <div className="error">
                                 <h3>⚠️ Unable to load matches</h3>
                                 <p>{error}</p>
-                                <button className="refresh-btn" onClick={loadDashboard} style={{marginTop: '16px'}}>
+                                <button className="refresh-btn" onClick={() => loadDashboard()} style={{marginTop: '16px'}}>
                                     🔄 Try Again
                                 </button>
                             </div>
@@ -922,7 +1128,34 @@
                         <div className="header">
                             <h1>🎯 Your Job Dashboard</h1>
                             <p>AI-powered job matches tailored for your skills and experience</p>
+                            
+                            <div className="header-actions">
+                                <a 
+                                    href={`edit-profile.html?user_id=${getUserId()}`}
+                                    className="header-btn"
+                                >
+                                    ✏️ Edit Profile
+                                </a>
+                                <button 
+                                    className="header-btn secondary"
+                                    onClick={handleRefresh}
+                                >
+                                    🔄 Refresh Matches
+                                </button>
+                            </div>
                         </div>
+
+                        {showUpdateNotification && (
+                            <div className="notification-bar">
+                                <span>✅ Profile updated successfully! Your job matches have been refreshed with AI analysis.</span>
+                                <button 
+                                    className="notification-close"
+                                    onClick={() => setShowUpdateNotification(false)}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        )}
 
                         <div className="stats-grid">
                             <div className="stat-card">
@@ -937,19 +1170,29 @@
                                 <div className="stat-number">{dashboardData?.stats?.good_matches || 0}</div>
                                 <div className="stat-label">Good (70-89%)</div>
                             </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{new Date().toLocaleDateString()}</div>
+                                <div className="stat-label">Last Updated</div>
+                            </div>
                         </div>
 
                         <div className="controls">
                             <div className="controls-header">
-                                <div>
-                                    <h2 style={{margin: '0 0 4px 0', color: '#1f2937'}}>Your Job Matches</h2>
-                                    <p style={{margin: 0, color: '#6b7280'}}>
-                                        Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || 0} matches
-                                    </p>
+                                <div className="controls-title">
+                                    <h2>Your Job Matches</h2>
+                                    <p>Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || 0} matches</p>
                                 </div>
-                                <button className="refresh-btn" onClick={loadDashboard}>
-                                    🔄 Refresh
-                                </button>
+                                <div className="controls-actions">
+                                    <a 
+                                        href={`edit-profile.html?user_id=${getUserId()}`}
+                                        className="edit-btn"
+                                    >
+                                        ✏️ Edit Profile
+                                    </a>
+                                    <button className="refresh-btn" onClick={handleRefresh}>
+                                        🔄 Refresh
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="search-filter">
@@ -977,10 +1220,18 @@
                             {filteredMatches.length === 0 ? (
                                 <div className="empty-state">
                                     <h3>No matches found</h3>
-                                    <p>Try adjusting your search or filter criteria</p>
-                                    <button className="refresh-btn" onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}>
-                                        ✨ Show All Matches
-                                    </button>
+                                    <p>Try adjusting your search or filter criteria, or refresh to get new matches</p>
+                                    <div style={{display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                                        <button 
+                                            className="refresh-btn" 
+                                            onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}
+                                        >
+                                            ✨ Show All Matches
+                                        </button>
+                                        <button className="refresh-btn" onClick={handleRefresh}>
+                                            🔄 Get New Matches
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 filteredMatches.map((match, index) => (
@@ -1031,13 +1282,13 @@
                                                 <div className="skills-group skills-have">
                                                     <h4>✅ You Have</h4>
                                                     <div className="skills-list">
-                                                        {formatSkills(match.matching_skills)}
+                                                        {formatSkills(match.matching_skills) || 'Skills analysis pending'}
                                                     </div>
                                                 </div>
                                                 <div className="skills-group skills-need">
                                                     <h4>📚 To Learn</h4>
                                                     <div className="skills-list">
-                                                        {formatSkills(match.missing_skills)}
+                                                        {formatSkills(match.missing_skills) || 'No additional skills needed'}
                                                     </div>
                                                 </div>
                                             </div>
@@ -1064,7 +1315,11 @@
                         </div>
 
                         <div style={{textAlign: 'center', marginTop: '40px', color: 'rgba(255,255,255,0.7)'}}>
-                            <p>Dashboard updates daily with new job matches</p>
+                            <p>Dashboard updates daily with new job matches • 
+                               <a href={`edit-profile.html?user_id=${getUserId()}`} style={{color: 'rgba(255,255,255,0.9)', marginLeft: '8px'}}>
+                                   Edit your profile
+                               </a> to improve matches
+                            </p>
                             <p><a href="mailto:support@jobmatcher.com" style={{color: 'rgba(255,255,255,0.9)'}}>Need help?</a></p>
                         </div>
                     </div>
