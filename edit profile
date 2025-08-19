@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile - JobMatcher</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header h1 {
+            font-size: 32px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 16px;
+        }
+
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .skills-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px dashed #e5e7eb;
+        }
+
+        .skills-input {
+            margin-bottom: 16px;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skill-remove {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .skill-remove:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: block;
+            padding: 20px;
+            border: 2px dashed #667eea;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .file-label:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .file-label.has-file {
+            border-color: #22c55e;
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .current-file {
+            background: #e0f2fe;
+            border: 1px solid #0284c7;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #0369a1;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e3f2fd;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #22c55e;
+            color: #166534;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #ef4444;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .form-card {
+                padding: 24px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="form-card">
+            <div class="form-header">
+                <h1>✏️ Edit Your Profile</h1>
+                <p>Update your information to get better job matches</p>
+            </div>
+
+            <div id="message-container"></div>
+
+            <form id="editProfileForm" enctype="multipart/form-data">
+                <input type="hidden" id="userId" name="user_id">
+
+                <div class="form-section">
+                    <h3 class="section-title">💼 Professional Information</h3>
+                    
+                    <div class="form-group">
+                        <label for="professionalTitle">Professional Title</label>
+                        <input type="text" id="professionalTitle" name="professionalTitle" 
+                               placeholder="e.g., Senior Software Engineer, Product Manager">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" 
+                                   placeholder="e.g., San Francisco, Remote, London">
+                        </div>
+                        <div class="form-group">
+                            <label for="experienceLevel">Experience Level</label>
+                            <select id="experienceLevel" name="experienceLevel">
+                                <option value="">Select Experience Level</option>
+                                <option value="Entry">Entry Level (0-2 years)</option>
+                                <option value="Mid">Mid Level (3-5 years)</option>
+                                <option value="Senior">Senior Level (6-10 years)</option>
+                                <option value="Lead">Lead/Principal (10+ years)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="yearsExperience">Years of Experience</label>
+                        <input type="number" id="yearsExperience" name="yearsExperience" 
+                               min="0" max="50" placeholder="e.g., 5">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">💰 Salary Expectations</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="salaryMin">Minimum Salary</label>
+                            <input type="number" id="salaryMin" name="salaryMin" 
+                                   placeholder="e.g., 80000">
+                        </div>
+                        <div class="form-group">
+                            <label for="salaryMax">Maximum Salary</label>
+                            <input type="number" id="salaryMax" name="salaryMax" 
+                                   placeholder="e.g., 120000">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currency">Currency</label>
+                        <select id="currency" name="currency">
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="INR">INR - Indian Rupee</option>
+                            <option value="CAD">CAD - Canadian Dollar</option>
+                            <option value="AUD">AUD - Australian Dollar</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">🛠️ Skills</h3>
+                    
+                    <div class="skills-container">
+                        <div class="form-group skills-input">
+                            <label for="skillInput">Add Skills (press Enter or comma to add)</label>
+                            <input type="text" id="skillInput" placeholder="e.g., JavaScript, React, Python">
+                        </div>
+                        
+                        <div class="skills-tags" id="skillsTags"></div>
+                        
+                        <input type="hidden" id="skillsHidden" name="skills">
+                        
+                        <p style="font-size: 14px; color: #6b7280; margin-top: 12px;">
+                            💡 Tip: Add both technical and soft skills for better matches
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">📄 Resume</h3>
+                    
+                    <div id="currentResumeInfo"></div>
+                    
+                    <div class="form-group">
+                        <div class="file-upload">
+                            <input type="file" id="resumeFile" name="resumeFile" 
+                                   class="file-input" accept=".pdf,.doc,.docx">
+                            <label for="resumeFile" class="file-label" id="fileLabel">
+                                📁 Choose new resume file (PDF, DOC, DOCX)
+                                <br><small>Click to browse or drag and drop</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="dashboard.html" class="btn btn-secondary">
+                        ← Back to Dashboard
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        💾 Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h3>Updating Your Profile...</h3>
+            <p>Please wait while we process your changes and analyze your resume with AI.</p>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://laveychaudhary.app.n8n.cloud';
+        
+        let currentSkills = [];
+        let isLoading = false;
+
+        // Get user ID from URL
+        function getUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('user_id') || 'demo_user';
+        }
+
+        // Show message
+        function showMessage(message, type = 'success') {
+            const container = document.getElementById('message-container');
+            container.innerHTML = `
+                <div class="${type}-message">
+                    ${message}
+                </div>
+            `;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Skills management
+        function addSkill(skill) {
+            const trimmedSkill = skill.trim();
+            if (trimmedSkill && !currentSkills.includes(trimmedSkill)) {
+                currentSkills.push(trimmedSkill);
+                updateSkillsDisplay();
+                updateSkillsHidden();
+            }
+        }
+
+        function removeSkill(skill) {
+            currentSkills = currentSkills.filter(s => s !== skill);
+            updateSkillsDisplay();
+            updateSkillsHidden();
+        }
+
+        function updateSkillsDisplay() {
+            const container = document.getElementById('skillsTags');
+            container.innerHTML = currentSkills.map(skill => `
+                <span class="skill-tag">
+                    ${skill}
+                    <button type="button" class="skill-remove" onclick="removeSkill('${skill}')">×</button>
+                </span>
+            `).join('');
+        }
+
+        function updateSkillsHidden() {
+            document.getElementById('skillsHidden').value = JSON.stringify(currentSkills);
+        }
+
+        // File upload handling
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            const label = document.getElementById('fileLabel');
+            
+            if (file) {
+                label.textContent = `✅ Selected: ${file.name}`;
+                label.classList.add('has-file');
+            } else {
+                label.innerHTML = `📁 Choose new resume file (PDF, DOC, DOCX)<br><small>Click to browse or drag and drop</small>`;
+                label.classList.remove('has-file');
+            }
+        }
+
+        // Load current profile data
+        async function loadProfile() {
+            const userId = getUserId();
+            document.getElementById('userId').value = userId;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/webhook/get-profile?user_id=${userId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Failed to load profile');
+                }
+
+                const data = await response.json();
+                
+                if (data.success && data.profile) {
+                    const profile = data.profile;
+                    
+                    // Fill form fields
+                    document.getElementById('professionalTitle').value = profile.professional_title || '';
+                    document.getElementById('location').value = profile.location || '';
+                    document.getElementById('experienceLevel').value = profile.experience_level || '';
+                    document.getElementById('yearsExperience').value = profile.experience_years || '';
+                    document.getElementById('salaryMin').value = profile.salary_min || '';
+                    document.getElementById('salaryMax').value = profile.salary_max || '';
+                    document.getElementById('currency').value = profile.currency || 'USD';
+                    
+                    // Load skills
+                    if (profile.skills && Array.isArray(profile.skills)) {
+                        currentSkills = profile.skills;
+                        updateSkillsDisplay();
+                        updateSkillsHidden();
+                    }
+                    
+                    // Show current resume info
+                    if (profile.has_resume && profile.resume_file_name) {
+                        document.getElementById('currentResumeInfo').innerHTML = `
+                            <div class="current-file">
+                                📄 Current resume: ${profile.resume_file_name}
+                            </div>
+                        `;
+                    }
+                } else {
+                    showMessage('Failed to load profile data', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showMessage('Unable to load profile. Please try again.', 'error');
+            }
+        }
+
+        // Submit form
+        async function submitForm(event) {
+            event.preventDefault();
+            
+            if (isLoading) return;
+            
+            isLoading = true;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                const formData = new FormData(document.getElementById('editProfileForm'));
+                
+                const response = await fetch(`${API_BASE_URL}/webhook/profile-edit`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('✅ Profile updated successfully! Your job matches are being refreshed.', 'success');
+                    
+                    // Redirect to dashboard after a short delay
+                    setTimeout(() => {
+                        const userId = getUserId();
+                        window.location.href = `dashboard.html?user_id=${userId}`;
+                    }, 2000);
+                } else {
+                    showMessage(result.message || 'Failed to update profile', 'error');
+                }
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showMessage('Failed to update profile. Please try again.', 'error');
+            } finally {
+                isLoading = false;
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load profile data
+            loadProfile();
+
+            // Skills input handling
+            const skillInput = document.getElementById('skillInput');
+            skillInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' || e.key === ',') {
+                    e.preventDefault();
+                    const skill = this.value.trim().replace(',', '');
+                    if (skill) {
+                        addSkill(skill);
+                        this.value = '';
+                    }
+                }
+            });
+
+            skillInput.addEventListener('blur', function() {
+                const skill = this.value.trim();
+                if (skill) {
+                    addSkill(skill);
+                    this.value = '';
+                }
+            });
+
+            // File upload handling
+            document.getElementById('resumeFile').addEventListener('change', handleFileSelect);
+
+            // Form submission
+            document.getElementById('editProfileForm').addEventListener('submit', submitForm);
+        });
+    </script>
+</body>
+</html>
