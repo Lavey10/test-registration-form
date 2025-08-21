@@ -196,22 +196,24 @@
             100% { transform: scale(1); }
         }
 
+        /* FIXED: Force single row layout for stats */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 24px;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
             margin-bottom: 32px;
         }
 
         .stat-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            padding: 28px;
+            padding: 24px 16px;
             border-radius: 16px;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
+            min-width: 0; /* Allow content to shrink */
         }
 
         .stat-card:hover {
@@ -220,19 +222,24 @@
         }
 
         .stat-number {
-            font-size: 48px;
+            font-size: 36px;
             font-weight: 800;
             margin-bottom: 8px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            line-height: 1.1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .stat-label {
             color: #6b7280;
             font-weight: 600;
-            font-size: 16px;
+            font-size: 14px;
+            line-height: 1.2;
         }
 
         .controls {
@@ -655,6 +662,22 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
+        /* FIXED: Better responsive design for stats */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            
+            .stat-number {
+                font-size: 28px;
+            }
+            
+            .stat-label {
+                font-size: 13px;
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 16px;
@@ -676,6 +699,23 @@
             .header-btn {
                 width: 100%;
                 justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 12px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 12px;
             }
 
             .match-header {
@@ -730,11 +770,6 @@
                 padding: 12px 16px;
             }
 
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-
             .notification-bar {
                 flex-direction: column;
                 text-align: center;
@@ -744,6 +779,21 @@
             .notification-close {
                 margin-left: 0;
                 align-self: flex-end;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .stat-number {
+                font-size: 28px;
+            }
+
+            .stat-label {
+                font-size: 13px;
             }
         }
     </style>
@@ -848,7 +898,7 @@
 
                 const pollForMatches = (userId, isRefresh = false) => {
                     let pollCount = 0;
-                    const maxPolls = isRefresh ? 12 : 24; // Shorter polling for refresh
+                    const maxPolls = isRefresh ? 12 : 24;
                     
                     const pollInterval = setInterval(async () => {
                         pollCount++;
@@ -863,14 +913,12 @@
                                     clearInterval(pollInterval);
                                     
                                     if (isRefresh) {
-                                        // For refresh, just update data without animation
                                         setShowMatchingProgress(false);
                                         setDashboardData(data);
                                         setFilteredMatches(data.matches || []);
                                         setLoading(false);
                                         setShowUpdateNotification(true);
                                     } else {
-                                        // For new user, show completion animation
                                         setMatchingComplete(true);
                                         
                                         setTimeout(() => {
@@ -928,7 +976,6 @@
                             setFilteredMatches(data.matches || []);
                             setLoading(false);
                         } else if (!skipMatching) {
-                            // No matches found, trigger matching
                             showMatchingProgressUI(userId, true);
                         } else {
                             setDashboardData(data);
@@ -953,18 +1000,6 @@
 
                     let filtered = dashboardData.matches;
 
-                    console.log('=== FILTERING DEBUG ===');
-                    console.log('Total matches:', dashboardData.matches.length);
-                    console.log('Current filter:', scoreFilter);
-                    
-                    dashboardData.matches.slice(0, 5).forEach((match, index) => {
-                        console.log(`Match ${index + 1}:`, {
-                            title: match.job_title,
-                            score: match.match_score,
-                            type: typeof match.match_score
-                        });
-                    });
-
                     if (searchTerm) {
                         filtered = filtered.filter(match =>
                             match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -977,35 +1012,24 @@
                     }
 
                     if (scoreFilter !== 'all') {
-                        console.log('Applying score filter:', scoreFilter);
-                        
                         if (scoreFilter === 'excellent') {
                             filtered = filtered.filter(match => {
                                 const score = Number(match.match_score);
-                                const passes = score >= 90;
-                                if (passes) console.log('Excellent match:', match.job_title, score);
-                                return passes;
+                                return score >= 90;
                             });
                         } else if (scoreFilter === 'good') {
                             filtered = filtered.filter(match => {
                                 const score = Number(match.match_score);
-                                const passes = score >= 70 && score < 90;
-                                if (passes) console.log('Good match:', match.job_title, score);
-                                return passes;
+                                return score >= 70 && score < 90;
                             });
                         } else if (scoreFilter === 'fair') {
                             filtered = filtered.filter(match => {
                                 const score = Number(match.match_score);
-                                const passes = score < 70;
-                                if (passes) console.log('Fair match:', match.job_title, score);
-                                return passes;
+                                return score < 70;
                             });
                         }
-                        
-                        console.log('After score filter, matches:', filtered.length);
                     }
 
-                    console.log('Final filtered matches:', filtered.length);
                     setFilteredMatches(filtered);
                 }, [dashboardData, searchTerm, scoreFilter]);
 
@@ -1048,6 +1072,27 @@
                     return skills.replace(/^"(.*)"$/, '$1') || '';
                 };
 
+                // FIXED: Better date formatting to prevent truncation
+                const formatDate = (dateString) => {
+                    if (!dateString) return new Date().toLocaleDateString();
+                    
+                    try {
+                        const date = new Date(dateString);
+                        // Use shorter format that fits better
+                        return date.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    } catch (error) {
+                        return new Date().toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    }
+                };
+
                 if (showMatchingProgress) {
                     if (matchingComplete) {
                         return (
@@ -1055,7 +1100,7 @@
                                 <div className="matching-progress">
                                     <div className="success-animation">
                                         <div className="checkmark">✓</div>
-                                        <h3>🎉 Found {dashboardData?.matches?.length || 'Several'} Perfect Matches!</h3>
+                                        <h3>Found {dashboardData?.matches?.length || 'Several'} Perfect Matches!</h3>
                                         <p>Loading your personalized job opportunities...</p>
                                     </div>
                                 </div>
@@ -1066,13 +1111,13 @@
                     return (
                         <div className="container">
                             <div className="header">
-                                <h1>🎯 Welcome to Your Job Dashboard</h1>
+                                <h1>Welcome to Your Job Dashboard</h1>
                                 <p>We're setting up your personalized experience</p>
                             </div>
 
                             <div className="matching-progress">
                                 <div className="spinner"></div>
-                                <h3>🎯 Finding Your Perfect Matches...</h3>
+                                <h3>Finding Your Perfect Matches...</h3>
                                 <p>We're analyzing thousands of job opportunities based on your profile</p>
                                 
                                 <div className="progress-steps">
@@ -1102,7 +1147,7 @@
                     return (
                         <div className="container">
                             <div className="loading">
-                                <h3>🔄 Loading your job matches...</h3>
+                                <h3>Loading your job matches...</h3>
                                 <p>Please wait while we fetch your personalized recommendations</p>
                             </div>
                         </div>
@@ -1113,10 +1158,10 @@
                     return (
                         <div className="container">
                             <div className="error">
-                                <h3>⚠️ Unable to load matches</h3>
+                                <h3>Unable to load matches</h3>
                                 <p>{error}</p>
                                 <button className="refresh-btn" onClick={() => loadDashboard()} style={{marginTop: '16px'}}>
-                                    🔄 Try Again
+                                    Try Again
                                 </button>
                             </div>
                         </div>
@@ -1126,7 +1171,7 @@
                 return (
                     <div className="container">
                         <div className="header">
-                            <h1>🎯 Your Job Dashboard</h1>
+                            <h1>Your Job Dashboard</h1>
                             <p>AI-powered job matches tailored for your skills and experience</p>
                             
                             <div className="header-actions">
@@ -1134,20 +1179,20 @@
                                     href={`edit-profile.html?user_id=${getUserId()}`}
                                     className="header-btn"
                                 >
-                                    ✏️ Edit Profile
+                                    Edit Profile
                                 </a>
                                 <button 
                                     className="header-btn secondary"
                                     onClick={handleRefresh}
                                 >
-                                    🔄 Refresh Matches
+                                    Refresh Matches
                                 </button>
                             </div>
                         </div>
 
                         {showUpdateNotification && (
                             <div className="notification-bar">
-                                <span>✅ Profile updated successfully! Your job matches have been refreshed with AI analysis.</span>
+                                <span>Profile updated successfully! Your job matches have been refreshed with AI analysis.</span>
                                 <button 
                                     className="notification-close"
                                     onClick={() => setShowUpdateNotification(false)}
@@ -1171,7 +1216,7 @@
                                 <div className="stat-label">Good (70-89%)</div>
                             </div>
                             <div className="stat-card">
-                                <div className="stat-number">{new Date().toLocaleDateString()}</div>
+                                <div className="stat-number">{formatDate(dashboardData?.last_updated)}</div>
                                 <div className="stat-label">Last Updated</div>
                             </div>
                         </div>
@@ -1188,7 +1233,7 @@
                                 <input
                                     type="text"
                                     className="search-input"
-                                    placeholder="🔍 Search jobs, companies, locations, or descriptions..."
+                                    placeholder="Search jobs, companies, locations, or descriptions..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
@@ -1215,10 +1260,10 @@
                                             className="refresh-btn" 
                                             onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}
                                         >
-                                            ✨ Show All Matches
+                                            Show All Matches
                                         </button>
                                         <button className="refresh-btn" onClick={handleRefresh}>
-                                            🔄 Get New Matches
+                                            Get New Matches
                                         </button>
                                     </div>
                                 </div>
@@ -1231,7 +1276,7 @@
                                                 <div className="job-meta">
                                                     <span><strong>{match.job_company || match.company || 'Company'}</strong></span>
                                                     <span>•</span>
-                                                    <span>📍 {match.job_location || match.location || 'Location'}</span>
+                                                    <span>{match.job_location || match.location || 'Location'}</span>
                                                 </div>
                                             </div>
                                             <div className="score-container">
@@ -1245,7 +1290,7 @@
                                         <div className="match-details">
                                             {match.job_description && (
                                                 <div className="job-description">
-                                                    <h4>📝 Job Description</h4>
+                                                    <h4>Job Description</h4>
                                                     <div className="job-description-content">
                                                         {expandedDescriptions[match.id || index] || match.job_description.length <= 400
                                                             ? match.job_description
@@ -1264,18 +1309,18 @@
                                             )}
 
                                             <div className="reasoning">
-                                                <strong>🤖 AI Analysis:</strong> {match.ai_reasoning || match.reasoning || 'Analysis not available'}
+                                                <strong>AI Analysis:</strong> {match.ai_reasoning || match.reasoning || 'Analysis not available'}
                                             </div>
 
                                             <div className="skills-section">
                                                 <div className="skills-group skills-have">
-                                                    <h4>✅ You Have</h4>
+                                                    <h4>You Have</h4>
                                                     <div className="skills-list">
                                                         {formatSkills(match.matching_skills) || 'Skills analysis pending'}
                                                     </div>
                                                 </div>
                                                 <div className="skills-group skills-need">
-                                                    <h4>📚 To Learn</h4>
+                                                    <h4>To Learn</h4>
                                                     <div className="skills-list">
                                                         {formatSkills(match.missing_skills) || 'No additional skills needed'}
                                                     </div>
@@ -1290,12 +1335,12 @@
                                                 rel="noopener noreferrer"
                                                 className="apply-btn"
                                             >
-                                                🚀 Apply Now
+                                                Apply Now
                                             </a>
                                             <div className="job-meta-info">
-                                                <span>📅 {match.created_date || 'Recently'}</span>
-                                                <span>💼 {match.job_type || 'Full-time'}</span>
-                                                <span>💰 {match.job_salary || match.salary_info || 'Salary not specified'}</span>
+                                                <span>{formatDate(match.created_date)}</span>
+                                                <span>{match.job_type || 'Full-time'}</span>
+                                                <span>{match.job_salary || match.salary_info || 'Salary not specified'}</span>
                                             </div>
                                         </div>
                                     </div>
