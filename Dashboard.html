@@ -1188,12 +1188,13 @@
                                     Refresh Matches
                                 </button>
                                 <a 
-                                    href="https://lambent-pavlova-0444a6.netlify.app/index.html"
+                                    href="https://lambent-pavlova-0444a6.netlify.app/test-registration.html"
                                     className="header-btn secondary"
                                     onClick={(e) => {
                                         // Clear any session storage
                                         sessionStorage.clear();
                                         localStorage.clear();
+                                        console.log('Logout: Cleared storage, redirecting to registration page');
                                         // Allow default navigation to proceed
                                     }}
                                 >
