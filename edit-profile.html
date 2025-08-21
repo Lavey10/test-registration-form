@@ -25,6 +25,42 @@
             padding: 20px;
         }
 
+        .nav-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+
         .form-card {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -293,6 +329,7 @@
             border-radius: 12px;
             margin-bottom: 20px;
             text-align: center;
+            font-weight: 600;
         }
 
         .error-message {
@@ -303,6 +340,7 @@
             border-radius: 12px;
             margin-bottom: 20px;
             text-align: center;
+            font-weight: 600;
         }
 
         @media (max-width: 768px) {
@@ -327,11 +365,25 @@
                 width: 100%;
                 justify-content: center;
             }
+
+            .nav-links {
+                gap: 16px;
+            }
+
+            .nav-link {
+                font-size: 14px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="nav-header">
+            <div class="nav-links">
+                <a href="#" class="nav-link" id="dashboardLink">⚡ Dashboard</a>
+            </div>
+        </div>
+
         <div class="form-card">
             <div class="form-header">
                 <h1>✏️ Edit Your Profile</h1>
@@ -443,7 +495,7 @@
                 </div>
 
                 <div class="form-actions">
-                    <a href="dashboard.html" class="btn btn-secondary">
+                    <a href="#" class="btn btn-secondary" id="backToDashboard">
                         ← Back to Dashboard
                     </a>
                     <button type="submit" class="btn btn-primary">
@@ -474,7 +526,16 @@
             return urlParams.get('user_id') || 'demo_user';
         }
 
-        // Show message
+        // Update navigation links with user ID
+        function updateNavigationLinks() {
+            const userId = getUserId();
+            const dashboardUrl = `dashboard.html?user_id=${userId}`;
+            
+            document.getElementById('dashboardLink').href = dashboardUrl;
+            document.getElementById('backToDashboard').href = dashboardUrl;
+        }
+
+        // Show message with improved timing
         function showMessage(message, type = 'success') {
             const container = document.getElementById('message-container');
             container.innerHTML = `
@@ -482,9 +543,12 @@
                     ${message}
                 </div>
             `;
-            setTimeout(() => {
-                container.innerHTML = '';
-            }, 5000);
+            // Don't auto-hide success messages - let them stay visible during redirect
+            if (type === 'error') {
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 5000);
+            }
         }
 
         // Skills management
@@ -581,7 +645,7 @@
             }
         }
 
-        // Submit form
+        // Submit form with improved success handling
         async function submitForm(event) {
             event.preventDefault();
             
@@ -593,25 +657,41 @@
             try {
                 const formData = new FormData(document.getElementById('editProfileForm'));
                 
+                console.log('Submitting form data...');
+                
                 const response = await fetch(`${API_BASE_URL}/webhook/profile-edit`, {
                     method: 'POST',
                     body: formData
                 });
+
+                console.log('Response status:', response.status);
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
 
                 const result = await response.json();
+                console.log('Response data:', result);
                 
                 if (result.success) {
-                    showMessage('✅ Profile updated successfully! Your job matches are being refreshed.', 'success');
+                    // Hide loading overlay first
+                    document.getElementById('loadingOverlay').style.display = 'none';
                     
-                    // Redirect to dashboard after a short delay
+                    // Show success message
+                    showMessage('✅ Profile updated successfully! Redirecting to dashboard...', 'success');
+                    
+                    // Set session storage for dashboard notification
+                    sessionStorage.setItem('profileUpdated', 'true');
+                    sessionStorage.setItem('updateUserId', getUserId());
+                    
+                    // Scroll to top to ensure message is visible
+                    window.scrollTo(0, 0);
+                    
+                    // Wait 3 seconds before redirect to ensure message is seen
                     setTimeout(() => {
                         const userId = getUserId();
                         window.location.href = `dashboard.html?user_id=${userId}`;
-                    }, 2000);
+                    }, 3000);
                 } else {
                     showMessage(result.message || 'Failed to update profile', 'error');
                 }
@@ -626,6 +706,9 @@
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
+            // Update navigation links
+            updateNavigationLinks();
+            
             // Load profile data
             loadProfile();
 
