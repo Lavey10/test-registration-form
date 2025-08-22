@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JobPilot - Get Started</title>
+    <title>Job Dashboard - JobMatcher</title>
+    
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18.2.0/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone@7.22.5/babel.min.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -12,67 +18,210 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 36px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .header-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .header-btn.secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .header-btn.secondary:hover {
+            background: #d1d5db;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .matching-progress {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #e3f2fd;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .matching-progress h3 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .matching-progress p {
+            color: #6b7280;
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        .progress-steps {
+            margin-top: 40px;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .step {
+            padding: 16px 20px;
+            margin: 12px 0;
+            background: #f8fafc;
+            border-radius: 12px;
+            opacity: 0.5;
+            transition: all 0.4s ease;
+            border-left: 4px solid #e5e7eb;
+            font-size: 16px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow-x: hidden;
+            gap: 12px;
         }
 
-        /* Animated background elements */
-        body::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
+        .step.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            opacity: 1;
+            transform: translateX(10px);
+            border-left-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0px, 0px) rotate(0deg); }
-            33% { transform: translate(30px, -30px) rotate(120deg); }
-            66% { transform: translate(-20px, 20px) rotate(240deg); }
-        }
-        
-        .form-container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 50px 40px;
-            border-radius: 24px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.2);
-            width: 100%;
-            max-width: 450px;
-            position: relative;
-            border: 1px solid rgba(255,255,255,0.2);
+        .step-icon {
+            font-size: 20px;
+            min-width: 24px;
         }
 
-        .form-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-            border-radius: 24px 24px 0 0;
-        }
-        
-        .logo-section {
+        .success-animation {
             text-align: center;
-            margin-bottom: 40px;
+            padding: 40px;
         }
 
-        h1 {
-            color: #1a202c;
+        .checkmark {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            font-size: 50px;
+            line-height: 100px;
+            margin: 0 auto 30px;
+            animation: pulse 1.5s ease-in-out;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* FIXED: Force single row layout for stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px 16px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            min-width: 0; /* Allow content to shrink */
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
             font-size: 36px;
             font-weight: 800;
             margin-bottom: 8px;
@@ -80,443 +229,1155 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            letter-spacing: -0.025em;
+            line-height: 1.1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        
-        .subtitle {
-            color: #64748b;
-            margin-bottom: 40px;
-            font-size: 18px;
-            font-weight: 400;
-            line-height: 1.5;
-        }
-        
-        .form-group {
-            margin-bottom: 24px;
-            position: relative;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: #374151;
+
+        .stat-label {
+            color: #6b7280;
             font-weight: 600;
             font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            line-height: 1.2;
         }
-        
-        input[type="email"],
-        input[type="text"] {
-            width: 100%;
-            padding: 16px 20px;
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .controls-title {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .controls-title h2 {
+            margin: 0 0 4px 0;
+            color: #1f2937;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .controls-title p {
+            margin: 0;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .controls-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .search-filter {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            padding: 12px 16px;
             border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: 500;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            background: rgba(255, 255, 255, 0.8);
-            color: #1a202c;
+            min-width: 250px;
+            transition: border-color 0.3s ease;
         }
-        
-        input[type="email"]:focus,
-        input[type="text"]:focus {
+
+        .search-input:focus {
             outline: none;
             border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-1px);
         }
 
-        input::placeholder {
-            color: #9ca3af;
-            font-weight: 400;
-        }
-        
-        button {
-            width: 100%;
-            padding: 18px 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
             border-radius: 12px;
             font-size: 16px;
-            font-weight: 700;
+            background: white;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            position: relative;
-            overflow: hidden;
+            transition: border-color 0.3s ease;
         }
 
-        button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
         }
 
-        button:hover:not(:disabled)::before {
-            left: 100%;
-        }
-        
-        button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active:not(:disabled) {
-            transform: translateY(0px);
-        }
-        
-        button:disabled {
-            opacity: 0.8;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .message {
-            margin-top: 24px;
-            padding: 16px 20px;
+        .refresh-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
             border-radius: 12px;
-            text-align: center;
+            cursor: pointer;
             font-weight: 600;
-            display: none;
-            font-size: 14px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .success {
-            background: linear-gradient(135deg, #10b981, #059669);
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .edit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        
-        .error {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
         }
-        
-        .info {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        
-        .loader {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #ffffff;
-            animation: spin 1s linear infinite;
-            margin-right: 8px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .help-text {
-            font-size: 14px;
-            color: #64748b;
+
+        .loading {
             text-align: center;
-            margin-top: 32px;
-            background: rgba(248, 250, 252, 0.8);
-            padding: 20px;
+            padding: 60px;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 16px;
-            border: 1px solid rgba(226, 232, 240, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .loading h3 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 20px 0;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .match-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            border-left: 6px solid #e5e7eb;
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .match-card.excellent {
+            border-left-color: #22c55e;
+        }
+
+        .match-card.good {
+            border-left-color: #f59e0b;
+        }
+
+        .match-card.fair {
+            border-left-color: #ef4444;
+        }
+
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            gap: 20px;
+        }
+
+        .job-info h3 {
+            font-size: 24px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .job-meta {
+            color: #6b7280;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .score-container {
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .score-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 18px;
+            margin-bottom: 8px;
+            display: inline-block;
+            min-width: 80px;
+        }
+
+        .score-badge.excellent {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+
+        .score-badge.good {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .score-badge.fair {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .score-label {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .match-details {
+            margin-bottom: 24px;
             line-height: 1.6;
         }
 
-        .help-text strong {
+        .job-description {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(243, 244, 246, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+
+        .job-description h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
             color: #374151;
-            display: block;
-            margin-bottom: 12px;
-            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .feature-list {
-            text-align: left;
-            display: inline-block;
-        }
-
-        .feature-list li {
-            margin: 6px 0;
-            position: relative;
-            padding-left: 24px;
-        }
-
-        .feature-list li::before {
-            content: '✓';
-            position: absolute;
-            left: 0;
-            color: #10b981;
-            font-weight: bold;
+        .job-description-content {
             font-size: 14px;
+            line-height: 1.6;
+            color: #6b7280;
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(229, 231, 235, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.5);
         }
 
-        /* Responsive design */
-        @media (max-width: 480px) {
-            body {
-                padding: 20px;
+        .description-toggle {
+            margin-top: 8px;
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+
+        .description-toggle:hover {
+            color: #4f46e5;
+        }
+
+        .reasoning {
+            color: #374151;
+            margin-bottom: 20px;
+            font-size: 16px;
+            padding: 16px;
+            background: rgba(243, 244, 246, 0.5);
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .skills-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .skills-group h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .skills-have h4 {
+            color: #059669;
+        }
+
+        .skills-need h4 {
+            color: #dc2626;
+        }
+
+        .skills-list {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .match-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .job-meta-info {
+            display: flex;
+            gap: 20px;
+            color: #9ca3af;
+            font-size: 14px;
+            align-items: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-state h3 {
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: #374151;
+        }
+
+        .empty-state p {
+            color: #6b7280;
+            margin-bottom: 32px;
+            font-size: 18px;
+        }
+
+        .notification-bar {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        }
+
+        .notification-bar.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .notification-bar.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 20px;
+            padding: 4px;
+            border-radius: 4px;
+            margin-left: auto;
+        }
+
+        .notification-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* FIXED: Better responsive design for stats */
+        @media (max-width: 1024px) {
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
             }
             
-            .form-container {
-                padding: 40px 30px;
-                margin: 0;
-            }
-            
-            h1 {
+            .stat-number {
                 font-size: 28px;
             }
             
-            .subtitle {
-                font-size: 16px;
+            .stat-label {
+                font-size: 13px;
             }
         }
 
-        /* Additional polish */
-        .form-group {
-            animation: slideUp 0.6s ease-out;
-            animation-fill-mode: both;
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header {
+                padding: 24px;
+            }
+
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .header-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .stat-card {
+                padding: 16px 12px;
+            }
+
+            .stat-number {
+                font-size: 24px;
+            }
+
+            .stat-label {
+                font-size: 12px;
+            }
+
+            .match-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .controls-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .edit-btn,
+            .refresh-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-filter {
+                flex-direction: column;
+            }
+
+            .search-input {
+                min-width: 100%;
+            }
+
+            .skills-section {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .match-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .job-meta-info {
+                justify-content: center;
+            }
+
+            .progress-steps {
+                max-width: 100%;
+            }
+
+            .step {
+                font-size: 14px;
+                padding: 12px 16px;
+            }
+
+            .notification-bar {
+                flex-direction: column;
+                text-align: center;
+                gap: 8px;
+            }
+
+            .notification-close {
+                margin-left: 0;
+                align-self: flex-end;
+            }
         }
 
-        .form-group:nth-child(1) { animation-delay: 0.1s; }
-        .form-group:nth-child(2) { animation-delay: 0.2s; }
-        .form-group:nth-child(3) { animation-delay: 0.3s; }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
-            to {
-                opacity: 1;
-                transform: translateY(0);
+
+            .stat-number {
+                font-size: 28px;
+            }
+
+            .stat-label {
+                font-size: 13px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="form-container">
-        <div class="logo-section">
-            <h1>🎯 JobPilot</h1>
-            <p class="subtitle">Enter your email to get started with personalized job matches</p>
-        </div>
-        
-        <form id="authForm">
-            <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required 
-                       placeholder="your.email@example.com">
+    <div id="root">
+        <div class="container">
+            <div class="loading">
+                <h3>🔄 Loading Dashboard...</h3>
+                <p>Please wait while we initialize your job dashboard</p>
             </div>
-            
-            <div class="form-group">
-                <label for="name">Full Name</label>
-                <input type="text" id="name" name="name" required 
-                       placeholder="John Doe">
-            </div>
-            
-            <button type="submit" id="submitBtn">
-                Get Started
-            </button>
-        </form>
-        
-        <div id="message" class="message"></div>
-        
-        <div class="help-text">
-            <strong>📌 How it works:</strong>
-            <ul class="feature-list">
-                <li>New user? We'll help you set up your profile</li>
-                <li>Returning? We'll show your latest job matches</li>
-                <li>No passwords needed - just your email!</li>
-            </ul>
         </div>
     </div>
 
-    <script>
-        // Log when page loads
-        console.log('🎯 JobPilot registration form loaded successfully!');
-        console.log('🔗 Webhook URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration');
-        
-        document.getElementById('authForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            console.log('📝 Form submission started...');
-            
-            const submitBtn = document.getElementById('submitBtn');
-            const messageDiv = document.getElementById('message');
-            const emailInput = document.getElementById('email');
-            const nameInput = document.getElementById('name');
-            
-            // Get form data
-            const formData = {
-                email: emailInput.value.trim(),
-                name: nameInput.value.trim()
-            };
-            
-            console.log('📤 Form data collected:', formData);
-            
-            // Validation
-            if (!formData.email || !formData.name) {
-                console.error('❌ Validation failed: Missing fields');
-                showMessage('Please fill in all fields', 'error');
+    <script type="text/babel">
+        function waitForDependencies() {
+            if (typeof React === 'undefined' || typeof ReactDOM === 'undefined') {
+                setTimeout(waitForDependencies, 100);
                 return;
             }
-            
-            // Email format validation
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(formData.email)) {
-                console.error('❌ Validation failed: Invalid email format');
-                showMessage('Please enter a valid email address', 'error');
-                return;
-            }
-            
-            console.log('✅ Form validation passed');
-            
-            // Update button state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loader"></span>Processing...';
-            hideMessage();
-            
-            try {
-                console.log('🚀 Sending request to n8n webhook...');
-                console.log('📍 URL: https://laveychaudhary.app.n8n.cloud/webhook/user-registration');
-                console.log('📦 Payload:', JSON.stringify(formData));
-                
-                const response = await fetch('https://laveychaudhary.app.n8n.cloud/webhook/user-registration', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                });
-                
-                console.log('📡 Response received');
-                console.log('📊 Status:', response.status);
-                console.log('📋 Status Text:', response.statusText);
-                console.log('🔍 Headers:', [...response.headers.entries()]);
-                
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('✅ Success response:', result);
+            initializeApp();
+        }
+
+        function initializeApp() {
+            const { useState, useEffect } = React;
+            const API_BASE_URL = 'https://laveychaudhary.app.n8n.cloud';
+
+            function JobDashboard() {
+                const [loading, setLoading] = useState(true);
+                const [error, setError] = useState(null);
+                const [dashboardData, setDashboardData] = useState(null);
+                const [searchTerm, setSearchTerm] = useState('');
+                const [scoreFilter, setScoreFilter] = useState('all');
+                const [filteredMatches, setFilteredMatches] = useState([]);
+                const [showMatchingProgress, setShowMatchingProgress] = useState(false);
+                const [currentStep, setCurrentStep] = useState(1);
+                const [matchingComplete, setMatchingComplete] = useState(false);
+                const [expandedDescriptions, setExpandedDescriptions] = useState({});
+                const [showUpdateNotification, setShowUpdateNotification] = useState(false);
+
+                const getUserId = () => {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    return urlParams.get('user_id') || 'demo_user';
+                };
+
+                const checkForProfileUpdate = () => {
+                    const profileUpdated = sessionStorage.getItem('profileUpdated');
+                    const updateUserId = sessionStorage.getItem('updateUserId');
+                    const currentUserId = getUserId();
                     
-                    // ✅ ENHANCED DEBUG LOGGING
-                    console.log('=== FRONTEND RESPONSE DEBUG ===');
-                    console.log('Full result:', result);
-                    console.log('result.success:', result.success);
-                    console.log('result.is_new_user:', result.is_new_user);
-                    console.log('result.profile_completed:', result.profile_completed);
-                    console.log('result.redirect_type:', result.redirect_type);
-                    console.log('result.user_id:', result.user_id);
+                    if (profileUpdated === 'true' && updateUserId === currentUserId) {
+                        sessionStorage.removeItem('profileUpdated');
+                        sessionStorage.removeItem('updateUserId');
+                        return true;
+                    }
+                    return false;
+                };
+
+                const checkForNewUserCompletion = () => {
+                    const justCompleted = sessionStorage.getItem('justCompletedProfile');
+                    const completionUserId = sessionStorage.getItem('completionUserId');
+                    const currentUserId = getUserId();
                     
-                    // Handle success
-                    if (result.success) {
-                        // Check if this is a new user or returning user
-                        if (result.is_new_user === false) {
-                            // Existing user - check redirect type or profile completion
-                            console.log('🔄 Existing user detected');
+                    if (justCompleted === 'true' && completionUserId === currentUserId) {
+                        sessionStorage.removeItem('justCompletedProfile');
+                        sessionStorage.removeItem('completionUserId');
+                        return true;
+                    }
+                    return false;
+                };
+
+                const triggerImmediateMatching = async (userId) => {
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/webhook/immediate-job-matching`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                user_id: userId,
+                                trigger_source: 'dashboard_refresh',
+                                immediate: true
+                            })
+                        });
+                    } catch (error) {
+                        console.error('Failed to trigger immediate matching:', error);
+                    }
+                };
+
+                const animateProgressSteps = () => {
+                    const steps = [
+                        { step: 1, delay: 0 },
+                        { step: 2, delay: 3000 },
+                        { step: 3, delay: 6000 },
+                        { step: 4, delay: 9000 }
+                    ];
+                    
+                    steps.forEach(({ step, delay }) => {
+                        setTimeout(() => {
+                            setCurrentStep(step);
+                        }, delay);
+                    });
+                };
+
+                const pollForMatches = (userId, isRefresh = false) => {
+                    let pollCount = 0;
+                    const maxPolls = isRefresh ? 12 : 24;
+                    
+                    const pollInterval = setInterval(async () => {
+                        pollCount++;
+                        
+                        try {
+                            const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
                             
-                            if (result.redirect_type === "dashboard" || result.profile_completed === true) {
-                                showMessage('👋 Welcome back! Taking you to your job dashboard...', 'info');
-                                console.log('🔄 Redirecting existing user to dashboard');
-                                console.log('Dashboard URL:', `https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${result.user_id}`);
-                                setTimeout(() => {
-                                    window.location.href = `https://lambent-pavlova-0444a6.netlify.app/dashboard.html?user_id=${result.user_id}`;
-                                }, 2000);
-                            } else {
-                                showMessage('👋 Welcome back! Completing your profile...', 'info');
-                                console.log('🔄 Redirecting existing user to profile setup');
-                                setTimeout(() => {
-                                    window.location.href = `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}`;
-                                }, 2000);
+                            if (response.ok) {
+                                const data = await response.json();
+                                
+                                if (data.matches && data.matches.length > 0) {
+                                    clearInterval(pollInterval);
+                                    
+                                    if (isRefresh) {
+                                        setShowMatchingProgress(false);
+                                        setDashboardData(data);
+                                        setFilteredMatches(data.matches || []);
+                                        setLoading(false);
+                                        setShowUpdateNotification(true);
+                                    } else {
+                                        setMatchingComplete(true);
+                                        
+                                        setTimeout(() => {
+                                            setShowMatchingProgress(false);
+                                            setDashboardData(data);
+                                            setFilteredMatches(data.matches || []);
+                                            setLoading(false);
+                                        }, 3000);
+                                    }
+                                    
+                                    return;
+                                }
                             }
-                        } else {
-                            // New user or default - go to profile setup
-                            console.log('🔄 New user detected');
-                            showMessage('🎉 Welcome! Let\'s set up your profile...', 'success');
-                            console.log('🔄 Redirecting new user to profile setup');
-                            console.log('Profile setup URL:', `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}&is_new_user=true`);
-                            setTimeout(() => {
-                                window.location.href = `https://lambent-pavlova-0444a6.netlify.app/profile-setup.html?user_id=${result.user_id}&is_new_user=true`;
-                            }, 2000);
+                            
+                            if (pollCount >= maxPolls) {
+                                clearInterval(pollInterval);
+                                setShowMatchingProgress(false);
+                                setLoading(false);
+                                setError('Matching is taking longer than expected. Please refresh the page in a few minutes.');
+                            }
+                        } catch (error) {
+                            console.error('Polling error:', error);
+                        }
+                    }, 5000);
+                };
+
+                const showMatchingProgressUI = async (userId, isRefresh = false) => {
+                    setShowMatchingProgress(true);
+                    setLoading(false);
+                    await triggerImmediateMatching(userId);
+                    
+                    if (!isRefresh) {
+                        animateProgressSteps();
+                    }
+                    
+                    pollForMatches(userId, isRefresh);
+                };
+
+                const loadDashboard = async (skipMatching = false) => {
+                    const userId = getUserId();
+                    setLoading(true);
+                    setError(null);
+
+                    try {
+                        const response = await fetch(`${API_BASE_URL}/webhook/dashboard-api?user_id=${userId}`);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
                         }
                         
-                        // Reset form
-                        emailInput.value = '';
-                        nameInput.value = '';
+                        const data = await response.json();
+                        
+                        if (data.matches && data.matches.length > 0) {
+                            setDashboardData(data);
+                            setFilteredMatches(data.matches || []);
+                            setLoading(false);
+                        } else if (!skipMatching) {
+                            showMatchingProgressUI(userId, true);
+                        } else {
+                            setDashboardData(data);
+                            setFilteredMatches([]);
+                            setLoading(false);
+                        }
+                        
+                    } catch (error) {
+                        console.error('Error loading dashboard:', error);
+                        setError('Unable to load job matches. Please try refreshing the page.');
+                        setLoading(false);
+                    }
+                };
+
+                const handleRefresh = () => {
+                    const userId = getUserId();
+                    showMatchingProgressUI(userId, true);
+                };
+
+                useEffect(() => {
+                    if (!dashboardData?.matches) return;
+
+                    let filtered = dashboardData.matches;
+
+                    if (searchTerm) {
+                        filtered = filtered.filter(match =>
+                            match.job_title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.company?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            match.job_description?.toLowerCase().includes(searchTerm.toLowerCase())
+                        );
+                    }
+
+                    if (scoreFilter !== 'all') {
+                        if (scoreFilter === 'excellent') {
+                            filtered = filtered.filter(match => {
+                                const score = Number(match.match_score);
+                                return score >= 90;
+                            });
+                        } else if (scoreFilter === 'good') {
+                            filtered = filtered.filter(match => {
+                                const score = Number(match.match_score);
+                                return score >= 70 && score < 90;
+                            });
+                        } else if (scoreFilter === 'fair') {
+                            filtered = filtered.filter(match => {
+                                const score = Number(match.match_score);
+                                return score < 70;
+                            });
+                        }
+                    }
+
+                    setFilteredMatches(filtered);
+                }, [dashboardData, searchTerm, scoreFilter]);
+
+                useEffect(() => {
+                    const userId = getUserId();
+                    
+                    if (checkForProfileUpdate()) {
+                        setShowUpdateNotification(true);
+                        showMatchingProgressUI(userId, true);
+                    } else if (checkForNewUserCompletion()) {
+                        showMatchingProgressUI(userId);
                     } else {
-                        throw new Error(result.message || 'Unknown server error');
+                        loadDashboard();
                     }
+                }, []);
+
+                const getScoreClass = (score) => {
+                    if (score >= 90) return 'excellent';
+                    if (score >= 70) return 'good';
+                    return 'fair';
+                };
+
+                const getScoreLabel = (score) => {
+                    if (score >= 90) return 'Excellent';
+                    if (score >= 70) return 'Good';
+                    return 'Fair';
+                };
+
+                const toggleDescription = (matchId) => {
+                    setExpandedDescriptions(prev => ({
+                        ...prev,
+                        [matchId]: !prev[matchId]
+                    }));
+                };
+
+                const formatSkills = (skills) => {
+                    if (!skills || skills === '""' || skills === '"' || skills.trim() === '') {
+                        return '';
+                    }
+                    return skills.replace(/^"(.*)"$/, '$1') || '';
+                };
+
+                // FIXED: Better date formatting to prevent truncation
+                const formatDate = (dateString) => {
+                    if (!dateString) return new Date().toLocaleDateString();
                     
-                } else {
-                    console.error('❌ HTTP Error:', response.status, response.statusText);
-                    
-                    let errorMessage;
                     try {
-                        const errorData = await response.json();
-                        errorMessage = errorData.message || errorData.error || 'Server error';
-                    } catch {
-                        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                        const date = new Date(dateString);
+                        // Use shorter format that fits better
+                        return date.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    } catch (error) {
+                        return new Date().toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
                     }
-                    
-                    throw new Error(errorMessage);
+                };
+
+                if (showMatchingProgress) {
+                    if (matchingComplete) {
+                        return (
+                            <div className="container">
+                                <div className="matching-progress">
+                                    <div className="success-animation">
+                                        <div className="checkmark">✓</div>
+                                        <h3>Found {dashboardData?.matches?.length || 'Several'} Perfect Matches!</h3>
+                                        <p>Loading your personalized job opportunities...</p>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    }
+
+                    return (
+                        <div className="container">
+                            <div className="header">
+                                <h1>Welcome to Your Job Dashboard</h1>
+                                <p>We're setting up your personalized experience</p>
+                            </div>
+
+                            <div className="matching-progress">
+                                <div className="spinner"></div>
+                                <h3>Finding Your Perfect Matches...</h3>
+                                <p>We're analyzing thousands of job opportunities based on your profile</p>
+                                
+                                <div className="progress-steps">
+                                    <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
+                                        <span className="step-icon">📋</span>
+                                        <span>Analyzing your profile</span>
+                                    </div>
+                                    <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
+                                        <span className="step-icon">🔍</span>
+                                        <span>Searching job database</span>
+                                    </div>
+                                    <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
+                                        <span className="step-icon">🤖</span>
+                                        <span>AI matching in progress</span>
+                                    </div>
+                                    <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
+                                        <span className="step-icon">✨</span>
+                                        <span>Finalizing your matches</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    );
                 }
-                
-            } catch (error) {
-                console.error('❌ Request failed:', error);
-                
-                let errorMessage;
-                if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                    errorMessage = '🔌 Connection error: Cannot reach the server. Please check your internet connection.';
-                } else if (error.message.includes('CORS')) {
-                    errorMessage = '🚫 CORS error: Server configuration issue. Please contact support.';
-                } else if (error.message.includes('NetworkError')) {
-                    errorMessage = '🌐 Network error: Please check your connection and try again.';
-                } else {
-                    errorMessage = `❌ Error: ${error.message}`;
+
+                if (loading) {
+                    return (
+                        <div className="container">
+                            <div className="loading">
+                                <h3>Loading your job matches...</h3>
+                                <p>Please wait while we fetch your personalized recommendations</p>
+                            </div>
+                        </div>
+                    );
                 }
-                
-                showMessage(errorMessage, 'error');
-                
-            } finally {
-                // Reset button state
-                console.log('🔄 Resetting button state');
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = 'Get Started';
+
+                if (error) {
+                    return (
+                        <div className="container">
+                            <div className="error">
+                                <h3>Unable to load matches</h3>
+                                <p>{error}</p>
+                                <button className="refresh-btn" onClick={() => loadDashboard()} style={{marginTop: '16px'}}>
+                                    Try Again
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className="container">
+                        <div className="header">
+                            <h1>Your Job Dashboard</h1>
+                            <p>AI-powered job matches tailored for your skills and experience</p>
+                            
+                            <div className="header-actions">
+                                <a 
+                                    href={`edit-profile.html?user_id=${getUserId()}`}
+                                    className="header-btn"
+                                >
+                                    Edit Profile
+                                </a>
+                                <button 
+                                    className="header-btn secondary"
+                                    onClick={handleRefresh}
+                                >
+                                    Refresh Matches
+                                </button>
+                                <a 
+                                    href="https://lambent-pavlova-0444a6.netlify.app/registration.html"
+                                    className="header-btn secondary"
+                                    onClick={(e) => {
+                                        // Clear any session storage
+                                        sessionStorage.clear();
+                                        localStorage.clear();
+                                        console.log('Logout: Cleared storage, redirecting to registration page');
+                                        // Allow default navigation to proceed
+                                    }}
+                                >
+                                    Log Out
+                                </a>
+                            </div>
+                        </div>
+
+                        {showUpdateNotification && (
+                            <div className="notification-bar">
+                                <span>Profile updated successfully! Your job matches have been refreshed with AI analysis.</span>
+                                <button 
+                                    className="notification-close"
+                                    onClick={() => setShowUpdateNotification(false)}
+                                >
+                                    ×
+                                </button>
+                            </div>
+                        )}
+
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.total_matches || 0}</div>
+                                <div className="stat-label">Total Matches</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.excellent_matches || 0}</div>
+                                <div className="stat-label">Excellent (90%+)</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{dashboardData?.stats?.good_matches || 0}</div>
+                                <div className="stat-label">Good (70-89%)</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-number">{formatDate(dashboardData?.last_updated)}</div>
+                                <div className="stat-label">Last Updated</div>
+                            </div>
+                        </div>
+
+                        <div className="controls">
+                            <div className="controls-header">
+                                <div className="controls-title">
+                                    <h2>Your Job Matches</h2>
+                                    <p>Showing {filteredMatches.length} of {dashboardData?.stats?.total_matches || 0} matches</p>
+                                </div>
+                            </div>
+
+                            <div className="search-filter">
+                                <input
+                                    type="text"
+                                    className="search-input"
+                                    placeholder="Search jobs, companies, locations, or descriptions..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                                <select
+                                    className="filter-select"
+                                    value={scoreFilter}
+                                    onChange={(e) => setScoreFilter(e.target.value)}
+                                >
+                                    <option value="all">All Matches</option>
+                                    <option value="excellent">Excellent (90%+)</option>
+                                    <option value="good">Good (70-89%)</option>
+                                    <option value="fair">Fair (&lt;70%)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="matches-container">
+                            {filteredMatches.length === 0 ? (
+                                <div className="empty-state">
+                                    <h3>No matches found</h3>
+                                    <p>Try adjusting your search or filter criteria, or refresh to get new matches</p>
+                                    <div style={{display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap'}}>
+                                        <button 
+                                            className="refresh-btn" 
+                                            onClick={() => { setSearchTerm(''); setScoreFilter('all'); }}
+                                        >
+                                            Show All Matches
+                                        </button>
+                                        <button className="refresh-btn" onClick={handleRefresh}>
+                                            Get New Matches
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                filteredMatches.map((match, index) => (
+                                    <div key={match.id || index} className={`match-card ${getScoreClass(match.match_score)}`}>
+                                        <div className="match-header">
+                                            <div className="job-info">
+                                                <h3>{match.job_title || 'Job Title Not Available'}</h3>
+                                                <div className="job-meta">
+                                                    <span><strong>{match.job_company || match.company || 'Company'}</strong></span>
+                                                    <span>•</span>
+                                                    <span>{match.job_location || match.location || 'Location'}</span>
+                                                </div>
+                                            </div>
+                                            <div className="score-container">
+                                                <div className={`score-badge ${getScoreClass(match.match_score)}`}>
+                                                    {match.match_score}%
+                                                </div>
+                                                <div className="score-label">{getScoreLabel(match.match_score)}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-details">
+                                            {match.job_description && (
+                                                <div className="job-description">
+                                                    <h4>Job Description</h4>
+                                                    <div className="job-description-content">
+                                                        {expandedDescriptions[match.id || index] || match.job_description.length <= 400
+                                                            ? match.job_description
+                                                            : `${match.job_description.substring(0, 400)}...`
+                                                        }
+                                                    </div>
+                                                    {match.job_description.length > 400 && (
+                                                        <button 
+                                                            className="description-toggle"
+                                                            onClick={() => toggleDescription(match.id || index)}
+                                                        >
+                                                            {expandedDescriptions[match.id || index] ? 'Show Less' : 'Show More'}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            <div className="reasoning">
+                                                <strong>AI Analysis:</strong> {match.ai_reasoning || match.reasoning || 'Analysis not available'}
+                                            </div>
+
+                                            <div className="skills-section">
+                                                <div className="skills-group skills-have">
+                                                    <h4>You Have</h4>
+                                                    <div className="skills-list">
+                                                        {formatSkills(match.matching_skills) || 'Skills analysis pending'}
+                                                    </div>
+                                                </div>
+                                                <div className="skills-group skills-need">
+                                                    <h4>To Learn</h4>
+                                                    <div className="skills-list">
+                                                        {formatSkills(match.missing_skills) || 'No additional skills needed'}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div className="match-actions">
+                                            <a 
+                                                href={match.job_url || match.apply_url || '#'} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer"
+                                                className="apply-btn"
+                                            >
+                                                Apply Now
+                                            </a>
+                                            <div className="job-meta-info">
+                                                <span>{formatDate(match.created_date)}</span>
+                                                <span>{match.job_type || 'Full-time'}</span>
+                                                <span>{match.job_salary || match.salary_info || 'Salary not specified'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div style={{textAlign: 'center', marginTop: '40px', color: 'rgba(255,255,255,0.7)'}}>
+                            <p>Dashboard updates daily with new job matches • 
+                               <a href={`edit-profile.html?user_id=${getUserId()}`} style={{color: 'rgba(255,255,255,0.9)', marginLeft: '8px'}}>
+                                   Edit your profile
+                               </a> to improve matches
+                            </p>
+                            <p><a href="mailto:support@jobmatcher.com" style={{color: 'rgba(255,255,255,0.9)'}}>Need help?</a></p>
+                        </div>
+                    </div>
+                );
             }
-        });
-        
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = `message ${type}`;
-            messageDiv.style.display = 'block';
-            console.log(`💬 Showing ${type} message:`, text);
+
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(React.createElement(JobDashboard));
         }
-        
-        function hideMessage() {
-            const messageDiv = document.getElementById('message');
-            messageDiv.style.display = 'none';
-        }
-        
-        // Test connection on load
-        console.log('🧪 Testing if n8n webhook is reachable...');
-        fetch('https://laveychaudhary.app.n8n.cloud/webhook/user-registration', {
-            method: 'HEAD'
-        }).then(response => {
-            console.log('✅ Webhook endpoint is reachable:', response.status);
-        }).catch(error => {
-            console.warn('⚠️ Webhook endpoint test failed:', error.message);
-        });
+
+        waitForDependencies();
     </script>
 </body>
 </html>
